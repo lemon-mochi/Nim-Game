@@ -2,7 +2,7 @@ from nim import Game
 
 
 is_pvp = False
-player_goes_first = True
+player_goes_first = False
 num_piles = 10
 min_per_pile = 5
 max_per_pile = 20
@@ -11,7 +11,7 @@ random_game = True
 
 # True means it the current player is the player.
 # False means the current player is the computer
-current_player = True
+current_player = False
 
 game = Game(
     is_pvp=is_pvp,
@@ -24,6 +24,7 @@ game = Game(
 
 while not game.game_over:
     game.display_piles()
+    game.display_info()
     if current_player:
         print("Choose a pile to reomve from")
         # assume the user will only enter a whole number

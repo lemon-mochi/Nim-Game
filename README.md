@@ -1,7 +1,7 @@
 To setup the pre-commit hooks,
 ```
 pre-commit install
-``
+```
 
 To setup the frontend
 ```

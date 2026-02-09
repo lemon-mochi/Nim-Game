@@ -1,4 +1,4 @@
-from nim import Game
+from nim import Game, Difficulty
 
 
 is_pvp = False
@@ -7,6 +7,7 @@ num_piles = 10
 min_per_pile = 5
 max_per_pile = 20
 random_game = True
+mode = Difficulty.VERY_HARD
 
 
 # True means it the current player is the player.
@@ -20,6 +21,7 @@ game = Game(
     min_per_pile=5,
     max_per_pile=20,
     random_game=True,
+    diff_level=mode,
 )
 
 while not game.game_over:

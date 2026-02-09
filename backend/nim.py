@@ -1,5 +1,14 @@
 import numpy as np
 from prettytable import PrettyTable
+from enum import Enum
+
+
+class Difficulty(Enum):
+    EASY = 1
+    MEDIUM = 2
+    HARD = 3
+    VERY_HARD = 4
+    IMPOSSIBLE = 5
 
 
 class Game:
@@ -15,6 +24,8 @@ class Game:
 
     nim_sum: int = 0
 
+    diff_level = Difficulty.EASY
+
     def is_balanced(self) -> None:
         self.nim_sum = np.bitwise_xor.reduce(self.piles)
         self.is_balanced_flag = True if self.nim_sum == 0 else False
@@ -25,10 +36,10 @@ class Game:
     def play_round(self, pile_idx: int, to_subtract: int) -> None:
         # this function plays one move in the game
 
-        if pile_idx > (self.num_piles - 1):
+        if pile_idx > (self.num_piles - 1) or pile_idx < 0:
             return
 
-        if to_subtract > self.piles[pile_idx]:
+        if to_subtract > self.piles[pile_idx] or to_subtract <= 0:
             return
 
         self.piles[pile_idx] -= to_subtract
@@ -37,7 +48,7 @@ class Game:
 
         self.is_balanced()
 
-    def computer_move(self):
+    def optimal_computer_move(self) -> None:
         # this function determines the best option for the computer player
         if self.is_balanced_flag:
             most_sticks = np.argmax(self.piles)
@@ -60,6 +71,49 @@ class Game:
             sticks_removed = piles[i] - new_size
             self.play_round(pile_idx=i, to_subtract=sticks_removed)
 
+    def easy_mode(self) -> None:
+        rand_idx = np.random.randint(low=0, high=self.num_piles)
+        while self.piles[rand_idx] == 0:
+            rand_idx = np.random.randint(low=0, high=self.num_piles)
+
+        if self.piles[rand_idx] == 1:
+            self.play_round(pile_idx=rand_idx, to_subtract=1)
+            return
+
+        to_pick_up = np.random.randint(low=1, high=self.piles[rand_idx])
+
+        self.play_round(pile_idx=rand_idx, to_subtract=to_pick_up)
+
+    def computer_move(self) -> None:
+        # the computer makes different moves depending on the difficulty level
+        if self.diff_level == Difficulty.EASY:
+            # if the difficulty level is easy,
+            # pick a random pile and remove a random number of sticks
+            self.easy_mode()
+
+        elif self.diff_level == Difficulty.MEDIUM:
+            # with medium mode,
+            # there is a 50% chance that the computer makes the optimal move
+            random_int = np.random.randint(low=0, high=3)
+            if random_int < 2:
+                self.easy_mode()
+            else:
+                self.optimal_computer_move()
+
+        elif self.diff_level == Difficulty.HARD:
+            # in hard mode,
+            # there is a 75% chance that the computer makes the optimal move
+            random_int = np.random.randint(low=0, high=3)
+            if random_int < 1:
+                self.easy_mode()
+            else:
+                self.optimal_computer_move()
+
+        else:
+            # with very hard and impossible mode,
+            # the computer alwasy makes the optimal move
+            self.optimal_computer_move()
+
     def generate_random_pile(self, num_piles=10, min_per_pile=5, max_per_pile=20):
         self.piles = np.random.randint(
             low=min_per_pile, high=max_per_pile + 1, size=num_piles
@@ -69,10 +123,11 @@ class Game:
     def create_random_pile(self, num_piles=10, min_per_pile=5, max_per_pile=20) -> None:
         self.generate_random_pile(num_piles, min_per_pile, max_per_pile)
 
+        # in impossible mode, the game is actually impossible for the player to win
         # if the computer is first, the game should be unbalanced.
         # if the player is first, the game should be unbalanced.
         # if the game is person vs person, it does not matter
-        if not self.is_pvp:
+        if not self.is_pvp and self.diff_level == Difficulty.IMPOSSIBLE:
             if not self.is_balanced_flag and self.player_goes_first:
                 # Idea: Add some sticks and then perform a
                 # move to bring it to a balanced state
@@ -80,7 +135,7 @@ class Game:
                 self.piles[smallest_pile] = max_per_pile
                 self.is_balanced()
 
-                self.computer_move()
+                self.optimal_computer_move()
                 if (self.piles < min_per_pile).any():
                     print("Do something to handle this case later")
 
@@ -125,13 +180,18 @@ class Game:
         min_per_pile: int,
         max_per_pile: int,
         random_game: bool,
+        diff_level: Difficulty = Difficulty.EASY,
         num_per_array=None,
     ):
         self.is_pvp = is_pvp
         self.player_goes_first = player_goes_first
         self.num_piles = num_piles
+        if min_per_pile >= max_per_pile:
+            print("Error:\tmin_per_pile is greater than or equal to max_per_pile")
+            return
         self.min_per_pile = min_per_pile
         self.max_per_pile = max_per_pile
+        self.diff_level = diff_level
 
         if random_game:
             self.create_random_pile(num_piles, min_per_pile, max_per_pile)

@@ -12,19 +12,20 @@ class Difficulty(Enum):
 
 
 class Game:
-    is_pvp = False  # whether game is played between two people or person vs computer
-    is_balanced_flag = True  # whether the game is balanced or not
-    player_goes_first = True  # whether the player goes first or the computer goes first
-    random_gmae = True  # whether the piles should be randomized or not
-    game_over = False
+    # is_pvp = False  # whether game is played between two people or person vs computer
+    # is_balanced_flag = True  # whether the game is balanced or not
+    # player_goes_first = True # whether the player
+    # goes first or the computer goes first
+    # random_gmae = True  # whether the piles should be randomized or not
+    # game_over = False
 
-    num_piles = 10
-    min_per_pile = 5
-    max_per_pile = 20
+    # num_piles = 10
+    # min_per_pile = 5
+    # max_per_pile = 20
 
-    nim_sum: int = 0
+    # nim_sum: int = 0
 
-    diff_level = Difficulty.EASY
+    # diff_level = Difficulty.EASY
 
     def is_balanced(self) -> None:
         self.nim_sum = np.bitwise_xor.reduce(self.piles)
@@ -192,6 +193,8 @@ class Game:
         self.min_per_pile = min_per_pile
         self.max_per_pile = max_per_pile
         self.diff_level = diff_level
+
+        self.game_over = False
 
         if random_game:
             self.create_random_pile(num_piles, min_per_pile, max_per_pile)

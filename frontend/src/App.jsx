@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import Pile from '@/components/Pile/Pile';
 
 const API = "http://localhost:8000";
 
@@ -52,17 +53,22 @@ export default function App() {
 
       <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
         {state.piles.map((pile, i) => (
-          <button
+          // <button
+          //   key={i}
+          //   disabled={pile === 0}
+          //   onClick={() => setSelectedPile(i)}
+          //   style={{
+          //     padding: 10,
+          //     background: selectedPile === i ? "#4caf50" : "#eee"
+          //   }}
+          // >
+          //   Pile {i}: {pile}
+          // </button>
+          <Pile
             key={i}
-            disabled={pile === 0}
+            originalNumSticks={pile}
             onClick={() => setSelectedPile(i)}
-            style={{
-              padding: 10,
-              background: selectedPile === i ? "#4caf50" : "#eee"
-            }}
-          >
-            Pile {i}: {pile}
-          </button>
+          />
         ))}
       </div>
 

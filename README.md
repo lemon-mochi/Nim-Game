@@ -7,6 +7,7 @@ To setup the frontend
 ```
 cd frontend
 npm install
+npm i bootstrap@5.3.8
 ```
 
 To setup the virtual environment and install the required libraries

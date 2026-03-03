@@ -19,20 +19,12 @@ class Game:
     # random_gmae = True  # whether the piles should be randomized or not
     # game_over = False
 
-    # num_piles = 10
-    # min_per_pile = 5
-    # max_per_pile = 20
-
-    # nim_sum: int = 0
-
-    # diff_level = Difficulty.EASY
-
     def is_balanced(self) -> None:
         self.nim_sum = np.bitwise_xor.reduce(self.piles)
         self.is_balanced_flag = True if self.nim_sum == 0 else False
 
     def check_game_over(self):
-        self.game_over = (self.piles == 0).all()
+        self.num_active_piles == 0
 
     def play_round(self, pile_idx: int, to_subtract: int) -> None:
         # this function plays one move in the game
@@ -45,6 +37,7 @@ class Game:
 
         self.piles[pile_idx] -= to_subtract
         if self.piles[pile_idx] == 0:
+            self.num_active_piles -= 1
             self.check_game_over()
 
         self.is_balanced()
@@ -86,34 +79,40 @@ class Game:
         self.play_round(pile_idx=rand_idx, to_subtract=to_pick_up)
 
     def computer_move(self) -> None:
-        # the computer makes different moves depending on the difficulty level
-        if self.diff_level == Difficulty.EASY:
-            # if the difficulty level is easy,
-            # pick a random pile and remove a random number of sticks
-            self.easy_mode()
-
-        elif self.diff_level == Difficulty.MEDIUM:
-            # with medium mode,
-            # there is a 50% chance that the computer makes the optimal move
-            random_int = np.random.randint(low=0, high=3)
-            if random_int < 2:
-                self.easy_mode()
-            else:
-                self.optimal_computer_move()
-
-        elif self.diff_level == Difficulty.HARD:
-            # in hard mode,
-            # there is a 75% chance that the computer makes the optimal move
-            random_int = np.random.randint(low=0, high=3)
-            if random_int < 1:
-                self.easy_mode()
-            else:
-                self.optimal_computer_move()
+        # when there is only on pile,
+        # the computer should just win regardless of the difficulty level
+        if self.num_active_piles == 1:
+            self.optimal_computer_move()
 
         else:
-            # with very hard and impossible mode,
-            # the computer alwasy makes the optimal move
-            self.optimal_computer_move()
+            # the computer makes different moves depending on the difficulty level
+            if self.diff_level == Difficulty.EASY:
+                # if the difficulty level is easy,
+                # pick a random pile and remove a random number of sticks
+                self.easy_mode()
+
+            elif self.diff_level == Difficulty.MEDIUM:
+                # with medium mode,
+                # there is a 50% chance that the computer makes the optimal move
+                random_int = np.random.randint(low=0, high=3)
+                if random_int < 2:
+                    self.easy_mode()
+                else:
+                    self.optimal_computer_move()
+
+            elif self.diff_level == Difficulty.HARD:
+                # in hard mode,
+                # there is a 75% chance that the computer makes the optimal move
+                random_int = np.random.randint(low=0, high=3)
+                if random_int < 1:
+                    self.easy_mode()
+                else:
+                    self.optimal_computer_move()
+
+            else:
+                # with very hard and impossible mode,
+                # the computer alwasy makes the optimal move
+                self.optimal_computer_move()
 
     def generate_random_pile(self, num_piles=10, min_per_pile=5, max_per_pile=20):
         self.piles = np.random.randint(
@@ -194,6 +193,9 @@ class Game:
         self.max_per_pile = max_per_pile
         self.diff_level = diff_level
 
+        self.num_active_piles = (
+            num_piles  # this keeps track of the number of piles that are still in play.
+        )
         self.game_over = False
 
         if random_game:

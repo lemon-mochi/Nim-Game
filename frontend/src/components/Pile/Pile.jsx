@@ -8,7 +8,7 @@ export default function Pile({
     const images = Array.from({ length: currentNumSticks }, (_, index) => index);
 
   return (
-    <div>
+    <div class='container'>
       <button onClick={() => setCurrentNumSticks(currentNumSticks + 1)}>Add Image</button>
       <button onClick={() => setCurrentNumSticks(Math.max(0, currentNumSticks - 1))}>Remove Image</button>
       
@@ -18,8 +18,8 @@ export default function Pile({
           <img 
             key={index} // Unique key required
             src={imageSrc}
-            alt={`Item ${index}`} 
-            style={{ width: '100px', height: '100px' }} 
+            alt={`Item ${index}`}
+            style={{ width: '100px', height: '100px' }}
           />
         ))}
       </div>

@@ -24,7 +24,7 @@ class Game:
         self.is_balanced_flag = True if self.nim_sum == 0 else False
 
     def check_game_over(self):
-        self.num_active_piles == 0
+        self.game_over = self.num_active_piles == 0
 
     def play_round(self, pile_idx: int, to_subtract: int) -> None:
         # this function plays one move in the game

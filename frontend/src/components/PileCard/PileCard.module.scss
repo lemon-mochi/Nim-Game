@@ -1,0 +1,107 @@
+@use '@/styles/variables' as *;
+
+/* PILES */
+
+.pileCard {
+  background: var(--global-surface);
+  border: 1px solid var(--global-border);
+  border-radius: 4px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  transition: border-color 0.15s, transform 0.15s;
+  min-width: 130px;
+}
+
+.selected {
+  border-color: var(--global-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(200,240,68,0.12);
+}
+
+.pileLabel {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--global-muted);
+}
+
+.sticksGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+  max-width: 100px;
+  min-height: 40px;
+  align-items: flex-end;
+}
+
+.stick {
+  width: 8px;
+  height: 40px;
+  background: linear-gradient(180deg, #e8d5a0, #c4a96b);
+  border-radius: 4px 4px 2px 2px;
+  position: relative;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+}
+
+.removing {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+
+.stickCount {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  color: var(--global-text);
+  line-height: 1;
+}
+
+.stickWord {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--global-muted);
+  margin-top: -10px;
+}
+
+.pileControls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.pileSelectBtn {
+  width: 100%;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--global-border);
+  color: var(--global-muted);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pileSelectBtn:hover:not(:disabled) {
+  border-color: var(--global-accent);
+  color: var(--global-accent);
+}
+
+.active {
+  background: var(--global-accent);
+  color: #000;
+  border-color: var(--global-accent);
+  font-weight: 700;
+}
+
+.pileSelectBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}

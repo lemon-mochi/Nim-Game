@@ -1,0 +1,20 @@
+/* globals.scss */
+
+@use './variables' as *;
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+:root {
+  --global-bg: #{$global-bg};
+  --global-surface: #{$global-surface};
+  --global-border: #{$global-border};
+  --global-accent: #{$global-accent};
+  --global-text: #{$global-text};
+  --global-muted: #{$global-muted};
+}
+
+body {
+  margin: 0;
+  background: var(--global-bg);
+  color: var(--global-text);
+  font-family: system-ui, sans-serif;
+}

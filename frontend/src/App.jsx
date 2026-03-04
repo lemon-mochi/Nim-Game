@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import PileCard from "@/components/PileCard/PileCard";
+import './styles/globals.scss'
 
 const API = "http://localhost:8000";
 
@@ -230,106 +232,12 @@ const css = `
   }
   .reset-btn:hover { border-color: ${palette.danger}; color: ${palette.danger}; }
 
-  /* PILES */
   .piles-container {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
     justify-content: center;
   }
-
-  .pile-card {
-    background: ${palette.surface};
-    border: 1px solid ${palette.border};
-    border-radius: 4px;
-    padding: 20px 18px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    transition: border-color 0.15s, transform 0.15s;
-    min-width: 130px;
-  }
-  .pile-card.selected {
-    border-color: ${palette.accent};
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(200,240,68,0.12);
-  }
-  .pile-label {
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: ${palette.muted};
-  }
-
-  .sticks-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    justify-content: center;
-    max-width: 100px;
-    min-height: 40px;
-    align-items: flex-end;
-  }
-  .stick {
-    width: 8px;
-    height: 40px;
-    background: linear-gradient(180deg, #e8d5a0, #c4a96b);
-    border-radius: 4px 4px 2px 2px;
-    position: relative;
-    transition: opacity 0.2s, transform 0.2s;
-    box-shadow: 1px 1px 0 rgba(0,0,0,0.4);
-  }
-  .stick::before {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 3px;
-    height: 8px;
-    background: rgba(255,255,255,0.25);
-    border-radius: 2px;
-  }
-  .stick.removing {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-  .stick-count {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px;
-    color: ${palette.text};
-    line-height: 1;
-  }
-  .stick-word {
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: ${palette.muted};
-    margin-top: -10px;
-  }
-
-  .pile-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-  }
-  .pile-select-btn {
-    width: 100%;
-    padding: 8px;
-    background: transparent;
-    border: 1px solid ${palette.border};
-    color: ${palette.muted};
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .pile-select-btn:hover:not(:disabled) { border-color: ${palette.accent}; color: ${palette.accent}; }
-  .pile-select-btn.active { background: ${palette.accent}; color: #000; border-color: ${palette.accent}; font-weight: 700; }
-  .pile-select-btn:disabled { opacity: 0.3; cursor: default; }
 
   /* MOVE PANEL */
   .move-panel {
@@ -474,39 +382,6 @@ const css = `
   }
 `;
 
-function Stick({ removing }) {
-  return <div className={`stick${removing ? " removing" : ""}`} />;
-}
-
-function PileCard({ idx, count, selected, onSelect, disabled }) {
-  const maxVisible = 20;
-  const display = Math.min(count, maxVisible);
-  return (
-    <div className={`pile-card${selected ? " selected" : ""}`}>
-      <div className="pile-label">Pile {idx + 1}</div>
-      <div className="sticks-grid">
-        {Array.from({ length: display }).map((_, i) => <Stick key={i} />)}
-        {count > maxVisible && (
-          <div style={{ fontSize: 10, color: palette.muted, width: "100%", textAlign: "center" }}>
-            +{count - maxVisible} more
-          </div>
-        )}
-      </div>
-      <div className="stick-count">{count}</div>
-      <div className="stick-word">{count === 1 ? "stick" : "sticks"}</div>
-      <div className="pile-controls">
-        <button
-          className={`pile-select-btn${selected ? " active" : ""}`}
-          onClick={() => onSelect(idx)}
-          disabled={disabled || count === 0}
-        >
-          {selected ? "✓ Selected" : "Select"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
 const defaultSetup = {
   is_pvp: false,
   player_goes_first: true,
@@ -525,7 +400,7 @@ export default function NimGame() {
   const [loading, setLoading] = useState(false);
   const [thinking, setThinking] = useState(false);
   const [error, setError] = useState("");
-  const [turnMsg, setTurnMsg] = useState("Your turn");
+  const [turnMsg, setTurnMsg] = useState("");
 
   const maxAmount = selectedPile !== null && state ? state.piles[selectedPile] : 1;
 
@@ -608,7 +483,7 @@ export default function NimGame() {
         }, 900);
       } else {
         setState(data);
-        setTurnMsg(prev => prev === "Player 1's turn" ? "Player 2's turn" : "Player 1's turn");
+        setTurnMsg(prev => prev === "Player 1's turn" && prev !== "" ? "Player 2's turn" : "Player 1's turn");
       }
     } catch (e) {
       setError(e.message);
@@ -622,7 +497,7 @@ export default function NimGame() {
     setState(null);
     setSelectedPile(null);
     setAmount(1);
-    setTurnMsg("Your turn");
+    setTurnMsg("");
     setError("");
   }
 
@@ -736,9 +611,6 @@ export default function NimGame() {
                     </span>
                   ) : turnMsg}
                 </span>
-              </div>
-              <div className="nim-sum-badge">
-                NIM-SUM <span>{state.nim_sum ?? "—"}</span>
               </div>
               <button className="reset-btn" onClick={resetToSetup}>↩ New Game</button>
             </div>

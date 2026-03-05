@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import PileCard from "@/components/PileCard/PileCard";
 import './styles/globals.scss'
+import './styles/nim.scss';
 
 const API = "http://localhost:8000";
 
@@ -25,363 +26,6 @@ const palette = {
   playerB: "#44c8f0",
 };
 
-const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: ${palette.bg};
-    color: ${palette.text};
-    font-family: 'Space Mono', monospace;
-    min-height: 100vh;
-  }
-
-  .nim-root {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 20px 60px;
-    background:
-      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(200,240,68,0.07) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(68,200,240,0.05) 0%, transparent 60%),
-      ${palette.bg};
-  }
-
-  .title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(56px, 12vw, 96px);
-    letter-spacing: 0.12em;
-    color: ${palette.text};
-    line-height: 1;
-    text-align: center;
-    margin-bottom: 4px;
-  }
-  .title span { color: ${palette.accent}; }
-
-  .subtitle {
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: ${palette.muted};
-    text-align: center;
-    margin-bottom: 48px;
-  }
-
-  /* SETUP CARD */
-  .setup-card {
-    background: ${palette.surface};
-    border: 1px solid ${palette.border};
-    border-radius: 4px;
-    padding: 36px;
-    width: 100%;
-    max-width: 520px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .setup-section-title {
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: ${palette.muted};
-    margin-bottom: 10px;
-  }
-
-  .toggle-group {
-    display: flex;
-    gap: 0;
-    border: 1px solid ${palette.border};
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .toggle-btn {
-    flex: 1;
-    padding: 10px;
-    background: transparent;
-    border: none;
-    color: ${palette.muted};
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 0.05em;
-  }
-  .toggle-btn.active {
-    background: ${palette.accent};
-    color: #000;
-    font-weight: 700;
-  }
-  .toggle-btn:not(.active):hover { background: rgba(255,255,255,0.04); color: ${palette.text}; }
-
-  .field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .field label {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: ${palette.muted};
-  }
-  .field input[type=number], .field select {
-    background: ${palette.bg};
-    border: 1px solid ${palette.border};
-    border-radius: 2px;
-    color: ${palette.text};
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    padding: 8px 10px;
-    outline: none;
-    transition: border-color 0.15s;
-    width: 100%;
-    -moz-appearance: textfield;
-  }
-  .field input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
-  .field input:focus, .field select:focus { border-color: ${palette.accent}; }
-  .field select option { background: #1a1a1a; }
-
-  .start-btn {
-    width: 100%;
-    padding: 14px;
-    background: ${palette.accent};
-    color: #000;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    letter-spacing: 0.2em;
-    border: none;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .start-btn:hover { background: #d8ff50; transform: translateY(-1px); }
-  .start-btn:active { transform: translateY(0); }
-
-  /* GAME AREA */
-  .game-area {
-    width: 100%;
-    max-width: 760px;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-  }
-
-  .status-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: ${palette.surface};
-    border: 1px solid ${palette.border};
-    border-radius: 4px;
-    padding: 14px 20px;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 12px;
-    letter-spacing: 0.08em;
-  }
-  .status-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: ${palette.accent};
-    animation: pulse 1.5s infinite;
-  }
-  .status-dot.idle { background: ${palette.muted}; animation: none; }
-  .status-dot.enemy { background: ${palette.playerB}; }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-  .nim-sum-badge {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: ${palette.muted};
-    background: ${palette.bg};
-    border: 1px solid ${palette.border};
-    border-radius: 2px;
-    padding: 4px 10px;
-  }
-  .nim-sum-badge span {
-    color: ${palette.text};
-    font-weight: 700;
-    margin-left: 6px;
-  }
-  .reset-btn {
-    background: transparent;
-    border: 1px solid ${palette.border};
-    color: ${palette.muted};
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    padding: 6px 14px;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .reset-btn:hover { border-color: ${palette.danger}; color: ${palette.danger}; }
-
-  .piles-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
-
-  /* MOVE PANEL */
-  .move-panel {
-    background: ${palette.surface};
-    border: 1px solid ${palette.accent};
-    border-radius: 4px;
-    padding: 24px 28px;
-    box-shadow: 0 0 30px rgba(200,240,68,0.08);
-  }
-  .move-panel-title {
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: ${palette.accent};
-    margin-bottom: 16px;
-  }
-  .move-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .move-label {
-    font-size: 12px;
-    color: ${palette.muted};
-    white-space: nowrap;
-  }
-  .move-amount-controls {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    border: 1px solid ${palette.border};
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .amt-btn {
-    width: 36px; height: 36px;
-    background: ${palette.bg};
-    border: none;
-    color: ${palette.text};
-    font-size: 18px;
-    cursor: pointer;
-    transition: background 0.1s;
-    font-family: 'Space Mono', monospace;
-  }
-  .amt-btn:hover { background: rgba(255,255,255,0.07); }
-  .amt-btn:disabled { opacity: 0.3; cursor: default; }
-  .amt-display {
-    width: 48px;
-    text-align: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 24px;
-    color: ${palette.accent};
-    background: ${palette.bg};
-    border-left: 1px solid ${palette.border};
-    border-right: 1px solid ${palette.border};
-    line-height: 36px;
-  }
-  .confirm-btn {
-    padding: 9px 28px;
-    background: ${palette.accent};
-    color: #000;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 0.15em;
-    border: none;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-left: auto;
-  }
-  .confirm-btn:hover:not(:disabled) { background: #d8ff50; }
-  .confirm-btn:disabled { opacity: 0.35; cursor: default; }
-
-  /* GAME OVER */
-  .gameover-overlay {
-    background: ${palette.surface};
-    border: 1px solid ${palette.border};
-    border-radius: 4px;
-    padding: 48px 36px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-  .gameover-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 72px;
-    letter-spacing: 0.1em;
-    line-height: 1;
-  }
-  .gameover-title.win { color: ${palette.accent}; }
-  .gameover-title.lose { color: ${palette.danger}; }
-  .gameover-subtitle {
-    font-size: 12px;
-    letter-spacing: 0.2em;
-    color: ${palette.muted};
-    text-transform: uppercase;
-  }
-  .play-again-btn {
-    margin-top: 8px;
-    padding: 12px 36px;
-    background: transparent;
-    border: 1px solid ${palette.accent};
-    color: ${palette.accent};
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    letter-spacing: 0.2em;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .play-again-btn:hover { background: ${palette.accent}; color: #000; }
-
-  /* THINKING */
-  .thinking {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    color: ${palette.playerB};
-    text-transform: uppercase;
-  }
-  .thinking-dots span {
-    animation: blink 1.2s infinite;
-    font-size: 16px;
-  }
-  .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
-
-  .error-msg {
-    font-size: 11px;
-    color: ${palette.danger};
-    letter-spacing: 0.08em;
-    padding: 8px 12px;
-    border: 1px solid rgba(255,77,77,0.3);
-    border-radius: 2px;
-    background: rgba(255,77,77,0.05);
-  }
-`;
-
 const defaultSetup = {
   is_pvp: false,
   player_goes_first: true,
@@ -401,6 +45,7 @@ export default function NimGame() {
   const [thinking, setThinking] = useState(false);
   const [error, setError] = useState("");
   const [turnMsg, setTurnMsg] = useState("");
+  const [winner, setWinner] = useState("");
 
   const maxAmount = selectedPile !== null && state ? state.piles[selectedPile] : 1;
 
@@ -483,39 +128,77 @@ export default function NimGame() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch(`${API}/move`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pile_idx: selectedPile, to_subtract: amount }),
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || "Invalid move");
-      }
-      const data = await res.json();
-      setSelectedPile(null);
-      setAmount(1);
 
-      if (data.game_over) {
-        setState(data);
-        setTurnMsg("Game over");
-        return;
-      }
-
+      // break into cases. Game can either be player v player or player v computer
       if (!setup.is_pvp) {
-        setThinking(true);
+        // player's turn to make a move
+        const res = await fetch(`${API}/human_move`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pile_idx: selectedPile, to_subtract: amount }),
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || "Invalid move");
+        }
+        const data = await res.json();
         setState(data);
-        setTurnMsg("Computer is thinking...");
+
+        if (data.game_over) {
+          setState(data);
+          setWinner("player");
+          setTurnMsg("Game over");
+          return;
+        }      
+
+        setThinking(true);
+        setTurnMsg("Computer is thinking...");  
+      
+        // computer's turn to make a move
+        const res2 = await fetch(`${API}/computer_move`, {
+          method: "POST",
+        });
+        console.log("here");
+        const data2 = await res2.json();
         // Small delay to show thinking state (computer already moved in API)
         setTimeout(() => {
           setThinking(false);
-          setState(data); // already has computer move applied
-          setTurnMsg("Your turn");
+          setState(data2); // already has computer move applied
         }, 1500);
+
+        if (data2.game_over) {
+          setState(data2);
+          setWinner("computer");
+          setTurnMsg("Game over");
+          return;
+        }
+
+        setTurnMsg("Your turn");
+
       } else {
+        // player vs player
+        if (selectedPile === null || amount < 1) return;
+        const res = await fetch(`${API}/human_move`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pile_idx: selectedPile, to_subtract: amount }),
+        });
+          
+        const data = await res.json();
         setState(data);
+
+        if (data.game_over) {
+          setState(data);
+          setWinner(turnMsg);
+          setTurnMsg("Game over");
+          return;
+        }
+        
         setTurnMsg(prev => prev === "Player 1's turn" ? "Player 2's turn" : "Player 1's turn");
       }
+
+      setSelectedPile(null);
+      setAmount(1);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -537,13 +220,11 @@ export default function NimGame() {
   // Determine game over winner message
   function winMessage() {
     if (!state?.game_over) return null;
-
-    console.log(state.last_player);
     
     if (!setup.is_pvp) {
-      return state.last_player === "player" ? "COMPUTER WINS!" : "YOU WIN!";
+      return winner === "computer" ? "COMPUTER WINS!" : "YOU WIN!";
     } else {
-      return state.last_player === "player 2" ? "PLAYER 1 WINS!" : "PLAYER 2 WINS";
+      return winner === "Player 1's turn" ? "PLAYER 1 WINS!" : "PLAYER 2 WINS!";
     }
   }
 

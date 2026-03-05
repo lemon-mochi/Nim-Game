@@ -1,0 +1,247 @@
+@import "variables";
+
+/* ROOT */
+
+.nim-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px 60px;
+
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(200,240,68,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(68,200,240,0.05) 0%, transparent 60%),
+    $bg;
+}
+
+/* TITLE */
+
+.title {
+  font-family: $font-title;
+  font-size: clamp(56px, 12vw, 96px);
+  letter-spacing: 0.12em;
+  color: $text;
+  line-height: 1;
+  text-align: center;
+  margin-bottom: 4px;
+
+  span {
+    color: $accent;
+  }
+}
+
+.subtitle {
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: $muted;
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+/* SETUP CARD */
+
+.setup-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 4px;
+  padding: 36px;
+
+  width: 100%;
+  max-width: 520px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.setup-section-title {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: $muted;
+  margin-bottom: 10px;
+}
+
+/* TOGGLE */
+
+.toggle-group {
+  display: flex;
+  border: 1px solid $border;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: $muted;
+  font-family: $font-mono;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.05em;
+
+  &:hover {
+    background: rgba(255,255,255,0.04);
+    color: $text;
+  }
+
+  &.active {
+    background: $accent;
+    color: #000;
+    font-weight: 700;
+  }
+}
+
+/* FORM FIELDS */
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $muted;
+  }
+
+  input[type=number],
+  select {
+    background: $bg;
+    border: 1px solid $border;
+    border-radius: 2px;
+    color: $text;
+    font-family: $font-mono;
+    font-size: 13px;
+    padding: 8px 10px;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+
+    &:focus {
+      border-color: $accent;
+    }
+  }
+}
+
+/* BUTTONS */
+
+.start-btn {
+  width: 100%;
+  padding: 14px;
+  background: $accent;
+  color: #000;
+
+  font-family: $font-title;
+  font-size: 20px;
+  letter-spacing: 0.2em;
+
+  border: none;
+  border-radius: 2px;
+
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: #d8ff50;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* GAME AREA */
+
+.game-area {
+  width: 100%;
+  max-width: 760px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* STATUS BAR */
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 4px;
+  padding: 14px 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $accent;
+  animation: pulse 1.5s infinite;
+
+  &.idle {
+    background: $muted;
+    animation: none;
+  }
+
+  &.enemy {
+    background: $playerB;
+  }
+}
+
+@keyframes pulse {
+  0%,100% { opacity:1 }
+  50% { opacity:0.3 }
+}
+
+/* MOVE PANEL */
+
+.move-panel {
+  background: $surface;
+  border: 1px solid $accent;
+  border-radius: 4px;
+  padding: 24px 28px;
+  box-shadow: 0 0 30px rgba(200,240,68,0.08);
+}
+
+/* GAME OVER */
+
+.gameover-overlay {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 4px;
+  padding: 48px 36px;
+
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.gameover-title {
+  font-family: $font-title;
+  font-size: 72px;
+  letter-spacing: 0.1em;
+
+  &.win { color: $accent; }
+  &.lose { color: $danger; }
+}

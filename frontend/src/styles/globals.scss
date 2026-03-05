@@ -12,6 +12,12 @@
   --global-muted: #{$global-muted};
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   margin: 0;
   background: var(--global-bg);

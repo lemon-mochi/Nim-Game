@@ -423,7 +423,12 @@ export default function NimGame() {
       setState(data);
       setSelectedPile(null);
       setAmount(1);
-      setTurnMsg(setup.player_goes_first ? "Your turn" : "Computer's turn — waiting...");
+      if (!setup.is_pvp) {
+        setTurnMsg(setup.player_goes_first ? "Your turn" : "Computer's turn — waiting...");
+      } else {
+        setTurnMsg("Player 1's turn");
+      }
+      
       setScreen("game");
       // If computer goes first in PvC
       if (!setup.is_pvp && !setup.player_goes_first) {
@@ -483,7 +488,7 @@ export default function NimGame() {
         }, 900);
       } else {
         setState(data);
-        setTurnMsg(prev => prev === "Player 1's turn" && prev !== "" ? "Player 2's turn" : "Player 1's turn");
+        setTurnMsg(prev => prev === "Player 1's turn" ? "Player 2's turn" : "Player 1's turn");
       }
     } catch (e) {
       setError(e.message);
@@ -507,9 +512,12 @@ export default function NimGame() {
   // Determine game over winner message
   function winMessage() {
     if (!state?.game_over) return null;
-    // In Nim, last to take loses (misère) OR last to take wins depending on rules.
-    // We don't know the exact variant — display generic game over.
-    return "GAME OVER";
+    
+    if (!state.is_pvp) {
+      if (isPlayerTurn) return "COMPUTER WINS";
+      else return "YOU WIN!"
+    }
+    else return "GAME OVER";
   }
 
   return (
@@ -675,7 +683,7 @@ export default function NimGame() {
                   ))}
                 </div>
                 <div className="gameover-overlay">
-                  <div className="gameover-title win">GAME OVER</div>
+                  <div className="gameover-title win">{winMessage()}</div>
                   <div className="gameover-subtitle">All sticks have been taken</div>
                   <button className="play-again-btn" onClick={resetToSetup}>Play Again</button>
                 </div>

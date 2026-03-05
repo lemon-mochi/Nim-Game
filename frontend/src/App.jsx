@@ -407,6 +407,32 @@ export default function NimGame() {
   async function startGame() {
     setError("");
     setLoading(true);
+    if (setup.num_piles <= 1) {
+      setError("At least two piles required.");
+      setLoading(false);
+      return;
+    }
+    if (setup.min_per_pile < 1 || setup.max_per_pile < 1) {
+      setError("Each pile must have at least one stick.");
+      setLoading(false);
+      return;
+    }
+    if (setup.min_per_pile >= setup.max_per_pile) {
+      setError("Max per pile must be strictly larger than min per pile.");
+      setLoading(false);
+      return;
+    }
+    if (setup.num_piles > 50) {
+      setError("Maximum number of piles should be 50 or fewer.");
+      setLoading(false);
+      return;
+    }
+    if (setup.max_per_pile > 150) {
+      setError("Max per pile should be 150 or fewer.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch(`${API}/new-game`, {
         method: "POST",
@@ -438,10 +464,10 @@ export default function NimGame() {
           setThinking(false);
           setState(s);
           setTurnMsg("Your turn");
-        }, 800);
+        }, 1500);
       }
     } catch (e) {
-      setError("Could not connect to server. Is it running on localhost:8000?");
+      setError(`Could not connect to server. ${e}`);
     } finally {
       setLoading(false);
     }
@@ -485,7 +511,7 @@ export default function NimGame() {
           setThinking(false);
           setState(data); // already has computer move applied
           setTurnMsg("Your turn");
-        }, 900);
+        }, 1500);
       } else {
         setState(data);
         setTurnMsg(prev => prev === "Player 1's turn" ? "Player 2's turn" : "Player 1's turn");
@@ -507,17 +533,18 @@ export default function NimGame() {
   }
 
   const isPlayerTurn = !thinking && !loading && state && !state.game_over;
-  const isPvp = setup.is_pvp;
 
   // Determine game over winner message
   function winMessage() {
     if (!state?.game_over) return null;
+
+    console.log(state.last_player);
     
-    if (!state.is_pvp) {
-      if (isPlayerTurn) return "COMPUTER WINS";
-      else return "YOU WIN!"
+    if (!setup.is_pvp) {
+      return state.last_player === "player" ? "COMPUTER WINS!" : "YOU WIN!";
+    } else {
+      return state.last_player === "player 2" ? "PLAYER 1 WINS!" : "PLAYER 2 WINS";
     }
-    else return "GAME OVER";
   }
 
   return (

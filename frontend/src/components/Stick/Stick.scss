@@ -1,0 +1,14 @@
+.stick {
+  width: 8px;
+  height: 40px;
+  background: linear-gradient(180deg, #e8d5a0, #c4a96b);
+  border-radius: 4px 4px 2px 2px;
+  position: relative;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+}
+
+.stick.removing {
+  opacity: 0;
+  transform: translateY(-12px);
+}

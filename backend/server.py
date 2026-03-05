@@ -16,6 +16,7 @@ app.add_middleware(
 
 # ---- GLOBAL STATE ----
 game: Game | None = None
+last_player: str | None = None
 
 
 class NewGameRequest(BaseModel):
@@ -35,6 +36,11 @@ class MoveRequest(BaseModel):
 @app.post("/new-game")
 def new_game(req: NewGameRequest):
     global game
+    global last_player
+    if not req.is_pvp:
+        last_player = "computer" if req.player_goes_first else "player"
+    else:
+        last_player = "player 2"
     game = Game(
         is_pvp=req.is_pvp,
         player_goes_first=req.player_goes_first,
@@ -50,8 +56,15 @@ def new_game(req: NewGameRequest):
 @app.post("/move")
 def move(req: MoveRequest):
     game.play_round(req.pile_idx, req.to_subtract)
-    if not game.game_over:
+
+    # if game.is_pvp:
+    #     # last_player = "player 2" if last_player == "player 1" else "player 2"
+    # else:
+    #     # last_player = "computer"
+
+    if not game.is_pvp and not game.game_over:
         game.computer_move()
+        # last_player = "player"
     return get_state()
 
 
@@ -63,6 +76,7 @@ def get_state():
             "nim_sum": int(game.nim_sum),
             "balanced": bool(game.is_balanced_flag),
             "game_over": bool(game.game_over),
+            "last_player": last_player,
         }
     else:
         return {
@@ -70,4 +84,5 @@ def get_state():
             "nim_sum": None,
             "balanced": None,
             "game_over": None,
+            "last_player": None,
         }

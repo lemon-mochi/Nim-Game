@@ -10,7 +10,7 @@ random_game = True
 mode = Difficulty.IMPOSSIBLE
 
 
-# True means it the current player is the player.
+# True means the current player is the player.
 # False means the current player is the computer
 current_player = False
 

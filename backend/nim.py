@@ -129,15 +129,10 @@ class Game:
         # if the game is person vs person, it does not matter
         if not self.is_pvp and self.diff_level == Difficulty.IMPOSSIBLE:
             if not self.is_balanced_flag and self.player_goes_first:
-                # Idea: Add some sticks and then perform a
-                # move to bring it to a balanced state
-                smallest_pile = np.argmin(self.piles)
-                self.piles[smallest_pile] = max_per_pile
-                self.is_balanced()
+                # Idea: keep generating boards until it is balanced
 
-                self.optimal_computer_move()
-                if (self.piles < min_per_pile).any():
-                    print("Do something to handle this case later")
+                while not self.is_balanced_flag:
+                    self.generate_random_pile(num_piles, min_per_pile, max_per_pile)
 
             if self.is_balanced_flag and not self.player_goes_first:
                 # subtract one from the largest pile.

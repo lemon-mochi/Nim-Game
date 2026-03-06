@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import PileCard from "@/components/PileCard/PileCard";
 import './styles/globals.scss'
 import "./styles/nim.scss";

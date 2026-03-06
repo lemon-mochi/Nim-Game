@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import PileCard from "@/components/PileCard/PileCard";
 import './styles/globals.scss'
-import './styles/nim.scss';
+import "./styles/nim.scss";
 
 const API = "http://localhost:8000";
 
@@ -230,7 +230,7 @@ export default function NimGame() {
 
   return (
     <>
-      <style>{css}</style>
+      {/* <style>{'./styles/globals.scss'}</style> */}
       <div className="nim-root">
         <div className="title">N<span>I</span>M</div>
         <div className="subtitle">The Ancient Game of Strategy</div>

@@ -1,6 +1,11 @@
-@import "variables";
+@use './variables' as *;
 
-/* ROOT */
+body {
+  background: $global-bg;
+  color: $global-text;
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+}
 
 .nim-root {
   min-height: 100vh;
@@ -8,49 +13,40 @@
   flex-direction: column;
   align-items: center;
   padding: 40px 20px 60px;
-
   background:
     radial-gradient(ellipse 80% 50% at 20% -10%, rgba(200,240,68,0.07) 0%, transparent 60%),
     radial-gradient(ellipse 60% 40% at 80% 110%, rgba(68,200,240,0.05) 0%, transparent 60%),
-    $bg;
+    $global-bg;
 }
 
-/* TITLE */
-
 .title {
-  font-family: $font-title;
+  font-family: 'Bebas Neue', sans-serif;
   font-size: clamp(56px, 12vw, 96px);
   letter-spacing: 0.12em;
-  color: $text;
+  color: $global-text;
   line-height: 1;
   text-align: center;
   margin-bottom: 4px;
-
-  span {
-    color: $accent;
-  }
 }
+.title span { color: $global-accent; }
 
 .subtitle {
   font-size: 11px;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: $muted;
+  color: $global-muted;
   text-align: center;
   margin-bottom: 48px;
 }
 
 /* SETUP CARD */
-
 .setup-card {
-  background: $surface;
-  border: 1px solid $border;
+  background: $global-surface;
+  border: 1px solid $global-border;
   border-radius: 4px;
   padding: 36px;
-
   width: 100%;
   max-width: 520px;
-
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -60,188 +56,297 @@
   font-size: 10px;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: $muted;
+  color: $global-muted;
   margin-bottom: 10px;
 }
 
-/* TOGGLE */
-
 .toggle-group {
   display: flex;
-  border: 1px solid $border;
+  gap: 0;
+  border: 1px solid $global-border;
   border-radius: 2px;
   overflow: hidden;
 }
-
 .toggle-btn {
   flex: 1;
   padding: 10px;
   background: transparent;
   border: none;
-  color: $muted;
-  font-family: $font-mono;
+  color: $global-muted;
+  font-family: 'Space Mono', monospace;
   font-size: 12px;
   cursor: pointer;
   transition: all 0.15s;
   letter-spacing: 0.05em;
-
-  &:hover {
-    background: rgba(255,255,255,0.04);
-    color: $text;
-  }
-
-  &.active {
-    background: $accent;
-    color: #000;
-    font-weight: 700;
-  }
 }
-
-/* FORM FIELDS */
+.toggle-btn.active {
+  background: $global-accent;
+  color: #000;
+  font-weight: 700;
+}
+.toggle-btn:not(.active):hover { background: rgba(255,255,255,0.04); color: $global-text; }
 
 .field-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
-
 .field {
   display: flex;
   flex-direction: column;
   gap: 6px;
-
-  label {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: $muted;
-  }
-
-  input[type=number],
-  select {
-    background: $bg;
-    border: 1px solid $border;
-    border-radius: 2px;
-    color: $text;
-    font-family: $font-mono;
-    font-size: 13px;
-    padding: 8px 10px;
-    outline: none;
-    transition: border-color 0.15s;
-    width: 100%;
-
-    &:focus {
-      border-color: $accent;
-    }
-  }
 }
-
-/* BUTTONS */
+.field label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $global-muted;
+}
+.field input[type=number], .field select {
+  background: $global-bg;
+  border: 1px solid $global-border;
+  border-radius: 2px;
+  color: $global-text;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+  -moz-appearance: textfield;
+}
+.field input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+.field input:focus, .field select:focus { border-color: $global-accent; }
+.field select option { background: #1a1a1a; }
 
 .start-btn {
   width: 100%;
   padding: 14px;
-  background: $accent;
+  background: $global-accent;
   color: #000;
-
-  font-family: $font-title;
+  font-family: 'Bebas Neue', sans-serif;
   font-size: 20px;
   letter-spacing: 0.2em;
-
   border: none;
   border-radius: 2px;
-
   cursor: pointer;
   transition: all 0.15s;
-
-  &:hover {
-    background: #d8ff50;
-    transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
 }
+.start-btn:hover { background: #d8ff50; transform: translateY(-1px); }
+.start-btn:active { transform: translateY(0); }
 
 /* GAME AREA */
-
 .game-area {
   width: 100%;
   max-width: 760px;
-
   display: flex;
   flex-direction: column;
   gap: 32px;
 }
 
-/* STATUS BAR */
-
 .status-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: $surface;
-  border: 1px solid $border;
+  background: $global-surface;
+  border: 1px solid $global-border;
   border-radius: 4px;
   padding: 14px 20px;
   gap: 16px;
   flex-wrap: wrap;
 }
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: $accent;
-  animation: pulse 1.5s infinite;
-
-  &.idle {
-    background: $muted;
-    animation: none;
-  }
-
-  &.enemy {
-    background: $playerB;
-  }
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
 }
-
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: $global-accent;
+  animation: pulse 1.5s infinite;
+}
+.status-dot.idle { background: $global-muted; animation: none; }
+.status-dot.enemy { background: $global-playerB; }
 @keyframes pulse {
-  0%,100% { opacity:1 }
-  50% { opacity:0.3 }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.nim-sum-badge {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: $global-muted;
+  background: $global-bg;
+  border: 1px solid $global-border;
+  border-radius: 2px;
+  padding: 4px 10px;
+}
+.nim-sum-badge span {
+  color: $global-text;
+  font-weight: 700;
+  margin-left: 6px;
+}
+.reset-btn {
+  background: transparent;
+  border: 1px solid $global-border;
+  color: $global-muted;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  padding: 6px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.reset-btn:hover { border-color: $global-danger; color: $global-danger; }
+
+.piles-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
 }
 
 /* MOVE PANEL */
-
 .move-panel {
-  background: $surface;
-  border: 1px solid $accent;
+  background: $global-surface;
+  border: 1px solid $global-accent;
   border-radius: 4px;
   padding: 24px 28px;
   box-shadow: 0 0 30px rgba(200,240,68,0.08);
 }
+.move-panel-title {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: $global-accent;
+  margin-bottom: 16px;
+}
+.move-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.move-label {
+  font-size: 12px;
+  color: $global-muted;
+  white-space: nowrap;
+}
+.move-amount-controls {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid $global-border;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.amt-btn {
+  width: 36px; height: 36px;
+  background: $global-bg;
+  border: none;
+  color: $global-text;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.1s;
+  font-family: 'Space Mono', monospace;
+}
+.amt-btn:hover { background: rgba(255,255,255,0.07); }
+.amt-btn:disabled { opacity: 0.3; cursor: default; }
+.amt-display {
+  width: 48px;
+  text-align: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  color: $global-accent;
+  background: $global-bg;
+  border-left: 1px solid $global-border;
+  border-right: 1px solid $global-border;
+  line-height: 36px;
+}
+.confirm-btn {
+  padding: 9px 28px;
+  background: $global-accent;
+  color: #000;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-left: auto;
+}
+.confirm-btn:hover:not(:disabled) { background: #d8ff50; }
+.confirm-btn:disabled { opacity: 0.35; cursor: default; }
 
 /* GAME OVER */
-
 .gameover-overlay {
-  background: $surface;
-  border: 1px solid $border;
+  background: $global-surface;
+  border: 1px solid $global-border;
   border-radius: 4px;
   padding: 48px 36px;
-
   text-align: center;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
 }
-
 .gameover-title {
-  font-family: $font-title;
+  font-family: 'Bebas Neue', sans-serif;
   font-size: 72px;
   letter-spacing: 0.1em;
+  line-height: 1;
+}
+.gameover-title.win { color: $global-accent; }
+.gameover-title.lose { color: $global-danger; }
+.gameover-subtitle {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: $global-muted;
+  text-transform: uppercase;
+}
+.play-again-btn {
+  margin-top: 8px;
+  padding: 12px 36px;
+  background: transparent;
+  border: 1px solid $global-accent;
+  color: $global-accent;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.2em;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.play-again-btn:hover { background: $global-accent; color: #000; }
 
-  &.win { color: $accent; }
-  &.lose { color: $danger; }
+/* THINKING */
+.thinking {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: $global-playerB;
+  text-transform: uppercase;
+}
+.thinking-dots span {
+  animation: blink 1.2s infinite;
+  font-size: 16px;
+}
+.thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
+
+.error-msg {
+  font-size: 11px;
+  color: $global-danger;
+  letter-spacing: 0.08em;
+  padding: 8px 12px;
+  border: 1px solid rgba(255,77,77,0.3);
+  border-radius: 2px;
+  background: rgba(255,77,77,0.05);
 }

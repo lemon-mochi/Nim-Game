@@ -13,19 +13,6 @@ const DIFFICULTIES = [
   { label: "Impossible", value: 5 },
 ];
 
-const palette = {
-  bg: "#0d0d0d",
-  surface: "#161616",
-  border: "#2a2a2a",
-  accent: "#c8f044",
-  accentDim: "#8aad1e",
-  text: "#f0f0e8",
-  muted: "#555",
-  danger: "#ff4d4d",
-  playerA: "#c8f044",
-  playerB: "#44c8f0",
-};
-
 const defaultSetup = {
   is_pvp: false,
   player_goes_first: true,
@@ -103,11 +90,15 @@ export default function NimGame() {
       setScreen("game");
       // If computer goes first in PvC
       if (!setup.is_pvp && !setup.player_goes_first) {
+        // call the backend function
+        const res = await fetch(`${API}/computer_move`, {
+          method: "POST",
+        });
+        const data = await res.json();
         setThinking(true);
         setTimeout(async () => {
-          const s = await fetchState();
           setThinking(false);
-          setState(s);
+          setState(data);
           setTurnMsg("Your turn");
         }, 1500);
       }
@@ -116,11 +107,6 @@ export default function NimGame() {
     } finally {
       setLoading(false);
     }
-  }
-
-  async function fetchState() {
-    const res = await fetch(`${API}/state`);
-    return await res.json();
   }
 
   async function makeMove() {
@@ -158,7 +144,6 @@ export default function NimGame() {
         const res2 = await fetch(`${API}/computer_move`, {
           method: "POST",
         });
-        console.log("here");
         const data2 = await res2.json();
         // Small delay to show thinking state (computer already moved in API)
         setTimeout(() => {
@@ -230,7 +215,6 @@ export default function NimGame() {
 
   return (
     <>
-      {/* <style>{'./styles/globals.scss'}</style> */}
       <div className="nim-root">
         <div className="title">N<span>I</span>M</div>
         <div className="subtitle">The Ancient Game of Strategy</div>
@@ -369,7 +353,7 @@ export default function NimGame() {
                           disabled={amount >= maxAmount}
                           onClick={() => setAmount(a => Math.min(maxAmount, a + 1))}>+</button>
                       </div>
-                      <span style={{ fontSize: 11, color: palette.muted }}>
+                      <span style={ { fontSize: 11, color: "var(--global-muted)" } }>
                         max: {maxAmount}
                       </span>
                       <button

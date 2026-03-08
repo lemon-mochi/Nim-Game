@@ -25,6 +25,7 @@ class NewGameRequest(BaseModel):
     min_per_pile: int
     max_per_pile: int
     difficulty: Difficulty
+    random_game: int
 
 
 class MoveRequest(BaseModel):
@@ -41,7 +42,7 @@ def new_game(req: NewGameRequest):
         num_piles=req.num_piles,
         min_per_pile=req.min_per_pile,
         max_per_pile=req.max_per_pile,
-        random_game=True,
+        random_game=req.random_game,
         diff_level=req.difficulty,
     )
     return get_state()

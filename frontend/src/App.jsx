@@ -20,6 +20,7 @@ const defaultSetup = {
   min_per_pile: 3,
   max_per_pile: 10,
   difficulty: 2,
+  random_game: true,
 };
 
 export default function NimGame() {
@@ -270,20 +271,33 @@ export default function NimGame() {
 
             <div>
               <div className="setup-section-title">Board Configuration</div>
+              <div className="toggle-group">
+                <button
+                  className={`toggle-btn${setup.random_game ? " active" : ""}`}
+                  onClick={() => setSetup(s => ({ ...s, random_game: true }))}
+                >Random Game</button>
+                <button
+                  className={`toggle-btn${!setup.random_game ? " active" : ""}`}
+                  onClick={() => setSetup(s => ({ ...s, random_game: false }))}
+                >Custom Game</button>
+
+              </div>
+              {/* the following line adds extra space to make it look cleaner */}
+              <div className="setup-section-title"></div>
               <div className="field-row">
                 <div className="field">
                   <label>Number of Piles</label>
-                  <input type="number" min={1} max={6} value={setup.num_piles}
+                  <input type="number" value={setup.num_piles}
                     onChange={e => setSetup(s => ({ ...s, num_piles: e.target.value }))} />
                 </div>
                 <div className="field">
                   <label>Min per Pile</label>
-                  <input type="number" min={1} max={20} value={setup.min_per_pile}
+                  <input type="number" value={setup.min_per_pile}
                     onChange={e => setSetup(s => ({ ...s, min_per_pile: e.target.value }))} />
                 </div>
                 <div className="field">
                   <label>Max per Pile</label>
-                  <input type="number" min={1} max={30} value={setup.max_per_pile}
+                  <input type="number" value={setup.max_per_pile}
                     onChange={e => setSetup(s => ({ ...s, max_per_pile: e.target.value }))} />
                 </div>
               </div>

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from nim import Game, Difficulty
+from typing import List
 
 app = FastAPI()
 
@@ -18,7 +19,7 @@ app.add_middleware(
 game: Game | None = None
 
 
-class NewGameRequest(BaseModel):
+class NewRandomGameRequest(BaseModel):
     is_pvp: bool
     player_goes_first: bool
     num_piles: int
@@ -28,13 +29,21 @@ class NewGameRequest(BaseModel):
     random_game: int
 
 
+class NewCustomGameRequest(BaseModel):
+    is_pvp: bool
+    player_goes_first: bool
+    num_piles: int
+    difficulty: Difficulty
+    num_per_array: List[int]
+
+
 class MoveRequest(BaseModel):
     pile_idx: int
     to_subtract: int
 
 
-@app.post("/new-game")
-def new_game(req: NewGameRequest):
+@app.post("/new-random-game")
+def new_random_game(req: NewRandomGameRequest):
     global game
     game = Game(
         is_pvp=req.is_pvp,
@@ -44,6 +53,20 @@ def new_game(req: NewGameRequest):
         max_per_pile=req.max_per_pile,
         random_game=req.random_game,
         diff_level=req.difficulty,
+    )
+    return get_state()
+
+
+@app.post("/new_custom-game")
+def new_custom_game(req: NewCustomGameRequest):
+    global game
+    game = Game(
+        is_pvp=req.is_pvp,
+        player_goes_first=req.player_goes_first,
+        num_piles=req.num_piles,
+        random_game=False,
+        diff_level=req.difficulty,
+        num_per_array=req.num_per_array,
     )
     return get_state()
 

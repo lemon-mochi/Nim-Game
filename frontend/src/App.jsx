@@ -34,8 +34,20 @@ export default function NimGame() {
   const [error, setError] = useState("");
   const [turnMsg, setTurnMsg] = useState("");
   const [winner, setWinner] = useState("");
+  const [customGame, setCustomGame] = useState(false);
+  const [buttomMsg, setbuttonMsg] = useState("Start Game")
 
   const maxAmount = selectedPile !== null && state ? state.piles[selectedPile] : 1;
+
+  async function toggleCustomGame() {
+    if (customGame) {
+      setCustomGame(false);
+      setbuttonMsg("Start Game");
+    } else {
+      setCustomGame(true);
+      setbuttonMsg("Continue");
+    }
+  }
 
   async function startGame() {
     setError("");
@@ -67,21 +79,38 @@ export default function NimGame() {
     }
 
     try {
-      const res = await fetch(`${API}/new-game`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...setup,
-          num_piles: Number(setup.num_piles),
-          min_per_pile: Number(setup.min_per_pile),
-          max_per_pile: Number(setup.max_per_pile),
-        }),
-      });
-      if (!res.ok) throw new Error("Server error");
-      const data = await res.json();
-      setState(data);
+      if (customGame === false) {
+        const res = await fetch(`${API}/new-random-game`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...setup,
+            num_piles: Number(setup.num_piles),
+            min_per_pile: Number(setup.min_per_pile),
+            max_per_pile: Number(setup.max_per_pile),
+          }),
+        });
+        if (!res.ok) throw new Error("Server error");
+        const data = await res.json();
+        setState(data);
+
+      } else {
+        const res = await fetch(`${API}/new-custom-game`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json"},
+          body: JSON.stringify({
+            ...setup,
+
+          }),
+        });
+        if (!res.ok) throw new Error("Server error");
+        const data = await res.json();
+        setState(data);
+
+      }
       setSelectedPile(null);
       setAmount(1);
+
       if (!setup.is_pvp) {
         setTurnMsg(setup.player_goes_first ? "Your turn" : "Computer's turn — waiting...");
       } else {
@@ -273,12 +302,12 @@ export default function NimGame() {
               <div className="setup-section-title">Board Configuration</div>
               <div className="toggle-group">
                 <button
-                  className={`toggle-btn${setup.random_game ? " active" : ""}`}
-                  onClick={() => setSetup(s => ({ ...s, random_game: true }))}
+                  className={`toggle-btn${!customGame ? " active" : ""}`}
+                  onClick={() => toggleCustomGame()}
                 >Random Game</button>
                 <button
-                  className={`toggle-btn${!setup.random_game ? " active" : ""}`}
-                  onClick={() => setSetup(s => ({ ...s, random_game: false }))}
+                  className={`toggle-btn${customGame ? " active" : ""}`}
+                  onClick={() => toggleCustomGame()}
                 >Custom Game</button>
 
               </div>
@@ -304,7 +333,7 @@ export default function NimGame() {
             </div>
 
             <button className="start-btn" onClick={startGame} disabled={loading}>
-              {loading ? "Starting..." : "Start Game"}
+              {loading ? "Starting..." : buttomMsg}
             </button>
           </div>
         )}

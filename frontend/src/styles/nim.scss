@@ -174,7 +174,7 @@ body {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
 }
-.nim-sum-badge {
+.rules-badge {
   font-size: 11px;
   letter-spacing: 0.1em;
   color: $global-muted;
@@ -183,7 +183,7 @@ body {
   border-radius: 2px;
   padding: 4px 10px;
 }
-.nim-sum-badge span {
+.rules-badge span {
   color: $global-text;
   font-weight: 700;
   margin-left: 6px;

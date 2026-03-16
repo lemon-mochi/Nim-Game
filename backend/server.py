@@ -51,13 +51,13 @@ def new_random_game(req: NewRandomGameRequest):
         num_piles=req.num_piles,
         min_per_pile=req.min_per_pile,
         max_per_pile=req.max_per_pile,
-        random_game=req.random_game,
+        random_game=True,
         diff_level=req.difficulty,
     )
     return get_state()
 
 
-@app.post("/new_custom-game")
+@app.post("/new-custom-game")
 def new_custom_game(req: NewCustomGameRequest):
     global game
     game = Game(

@@ -35,7 +35,7 @@ export default function NimGame() {
   const [turnMsg, setTurnMsg] = useState("");
   const [winner, setWinner] = useState("");
   const [customGame, setCustomGame] = useState(false);
-  const [buttomMsg, setbuttonMsg] = useState("Start Game")
+  const [buttomMsg, setbuttonMsg] = useState("Start Game");
 
   const maxAmount = selectedPile !== null && state ? state.piles[selectedPile] : 1;
 
@@ -250,92 +250,106 @@ export default function NimGame() {
         <div className="subtitle">The Ancient Game of Strategy</div>
 
         {screen === "setup" && (
-          <div className="setup-card">
-            {error && <div className="error-msg">{error}</div>}
-
-            <div>
-              <div className="setup-section-title">Game Mode</div>
-              <div className="toggle-group">
-                <button
-                  className={`toggle-btn${!setup.is_pvp ? " active" : ""}`}
-                  onClick={() => setSetup(s => ({ ...s, is_pvp: false }))}
-                >vs Computer</button>
-                <button
-                  className={`toggle-btn${setup.is_pvp ? " active" : ""}`}
-                  onClick={() => setSetup(s => ({ ...s, is_pvp: true }))}
-                >vs Player</button>
+          <>
+            <div className="setup-card">
+              <div className="rules-badge">
+              Rules of Nim Game: <br></br>
+              Two players. Players take turns removing any number of sticks from a single pile (at least one). The last player to make a move is the winner.
               </div>
             </div>
+            <div className="setup-card">
+              {error && <div className="error-msg">{error}</div>}
 
-            {!setup.is_pvp && (
-              <>
-                <div>
-                  <div className="setup-section-title">Who Goes First</div>
-                  <div className="toggle-group">
-                    <button
-                      className={`toggle-btn${setup.player_goes_first ? " active" : ""}`}
-                      onClick={() => setSetup(s => ({ ...s, player_goes_first: true }))}
-                    >Player First</button>
-                    <button
-                      className={`toggle-btn${!setup.player_goes_first ? " active" : ""}`}
-                      onClick={() => setSetup(s => ({ ...s, player_goes_first: false }))}
-                    >Computer First</button>
-                  </div>
+              <div>
+                <div className="setup-section-title">Game Mode</div>
+                <div className="toggle-group">
+                  <button
+                    className={`toggle-btn${!setup.is_pvp ? " active" : ""}`}
+                    onClick={() => setSetup(s => ({ ...s, is_pvp: false }))}
+                  >vs Computer</button>
+                  <button
+                    className={`toggle-btn${setup.is_pvp ? " active" : ""}`}
+                    onClick={() => setSetup(s => ({ ...s, is_pvp: true }))}
+                  >vs Player</button>
                 </div>
+              </div>
 
-                <div>
-                  <div className="setup-section-title">Difficulty</div>
-                  <div className="toggle-group">
-                    {DIFFICULTIES.map(d => (
+              {!setup.is_pvp && (
+                <>
+                  <div>
+                    <div className="setup-section-title">Who Goes First</div>
+                    <div className="toggle-group">
                       <button
-                        key={d.value}
-                        className={`toggle-btn${setup.difficulty === d.value ? " active" : ""}`}
-                        onClick={() => setSetup(s => ({ ...s, difficulty: d.value }))}
-                      >{d.label}</button>
-                    ))}
+                        className={`toggle-btn${setup.player_goes_first ? " active" : ""}`}
+                        onClick={() => setSetup(s => ({ ...s, player_goes_first: true }))}
+                      >Player First</button>
+                      <button
+                        className={`toggle-btn${!setup.player_goes_first ? " active" : ""}`}
+                        onClick={() => setSetup(s => ({ ...s, player_goes_first: false }))}
+                      >Computer First</button>
+                    </div>
                   </div>
-                </div>
-              </>
-            )}
 
-            <div>
-              <div className="setup-section-title">Board Configuration</div>
-              <div className="toggle-group">
-                <button
-                  className={`toggle-btn${!customGame ? " active" : ""}`}
-                  onClick={() => toggleCustomGame()}
-                >Random Game</button>
-                <button
-                  className={`toggle-btn${customGame ? " active" : ""}`}
-                  onClick={() => toggleCustomGame()}
-                >Custom Game</button>
+                  <div>
+                    <div className="setup-section-title">Difficulty</div>
+                    <div className="toggle-group">
+                      {DIFFICULTIES.map(d => (
+                        <button
+                          key={d.value}
+                          className={`toggle-btn${setup.difficulty === d.value ? " active" : ""}`}
+                          onClick={() => setSetup(s => ({ ...s, difficulty: d.value }))}
+                        >{d.label}</button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
 
+              <div>
+                <div className="setup-section-title">Board Configuration</div>
+                <div className="toggle-group">
+                  <button
+                    className={`toggle-btn${!customGame ? " active" : ""}`}
+                    onClick={() => toggleCustomGame()}
+                  >Random Game</button>
+                  <button
+                    className={`toggle-btn${customGame ? " active" : ""}`}
+                    onClick={() => toggleCustomGame()}
+                  >Custom Game</button>
+
+                </div>
+                {/* the following line adds extra space to make it look cleaner */}
+                <div className="setup-section-title"></div>
+                <div className="field-row">
+                  <div className="field">
+                    <label>Number of Piles</label>
+                    <input type="number" value={setup.num_piles}
+                      onChange={e => setSetup(s => ({ ...s, num_piles: e.target.value }))} />
+                  </div>
+                  {!customGame && (
+                    <>
+                      <div className="field">
+                        <label>Min per Pile</label>
+                        <input type="number" value={setup.min_per_pile}
+                          onChange={e => setSetup(s => ({ ...s, min_per_pile: e.target.value }))} />
+                      </div>
+                      <div className="field">
+                        <label>Max per Pile</label>
+                        <input type="number" value={setup.max_per_pile}
+                          onChange={e => setSetup(s => ({ ...s, max_per_pile: e.target.value }))} />
+                      </div>
+                    </>
+                  )}
+
+                </div>
               </div>
-              {/* the following line adds extra space to make it look cleaner */}
-              <div className="setup-section-title"></div>
-              <div className="field-row">
-                <div className="field">
-                  <label>Number of Piles</label>
-                  <input type="number" value={setup.num_piles}
-                    onChange={e => setSetup(s => ({ ...s, num_piles: e.target.value }))} />
-                </div>
-                <div className="field">
-                  <label>Min per Pile</label>
-                  <input type="number" value={setup.min_per_pile}
-                    onChange={e => setSetup(s => ({ ...s, min_per_pile: e.target.value }))} />
-                </div>
-                <div className="field">
-                  <label>Max per Pile</label>
-                  <input type="number" value={setup.max_per_pile}
-                    onChange={e => setSetup(s => ({ ...s, max_per_pile: e.target.value }))} />
-                </div>
-              </div>
+
+              <button className="start-btn" onClick={startGame} disabled={loading}>
+                {loading ? "Starting..." : buttomMsg}
+              </button>
             </div>
-
-            <button className="start-btn" onClick={startGame} disabled={loading}>
-              {loading ? "Starting..." : buttomMsg}
-            </button>
-          </div>
+          </>
+        
         )}
 
         {screen === "game" && state && (

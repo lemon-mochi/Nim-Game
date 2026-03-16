@@ -172,9 +172,9 @@ class Game:
         is_pvp: bool,
         player_goes_first: bool,
         num_piles: int,
-        min_per_pile: int,
-        max_per_pile: int,
         random_game: bool,
+        min_per_pile: int = 0,
+        max_per_pile: int = 0,
         diff_level: Difficulty = Difficulty.EASY,
         num_per_array=None,
     ):

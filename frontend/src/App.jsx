@@ -33,6 +33,7 @@ export default function NimGame() {
   const [error, setError] = useState("");
   const [turnMsg, setTurnMsg] = useState("");
   const [winner, setWinner] = useState("");
+  const [customGame, setCustomGame] = useState(0);
 
   const maxAmount = selectedPile !== null && state ? state.piles[selectedPile] : 1;
 
@@ -66,7 +67,7 @@ export default function NimGame() {
     }
 
     try {
-      const res = await fetch(`${API}/new-game`, {
+      const res = await fetch(`${API}/new-random-game`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

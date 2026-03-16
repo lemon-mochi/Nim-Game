@@ -34,7 +34,7 @@ class NewCustomGameRequest(BaseModel):
     player_goes_first: bool
     num_piles: int
     difficulty: Difficulty
-    num_per_array: List[int]
+    custom_piles: List[int]
 
 
 class MoveRequest(BaseModel):
@@ -66,7 +66,7 @@ def new_custom_game(req: NewCustomGameRequest):
         num_piles=req.num_piles,
         random_game=False,
         diff_level=req.difficulty,
-        num_per_array=req.num_per_array,
+        num_per_array=req.custom_piles,
     )
     return get_state()
 

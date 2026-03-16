@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from nim import Game, Difficulty, np
+from nim import Game, Difficulty
+from typing import List
 
 app = FastAPI()
 
@@ -33,7 +34,7 @@ class NewCustomGameRequest(BaseModel):
     player_goes_first: bool
     num_piles: int
     difficulty: Difficulty
-    num_per_array: np.ndarray
+    num_per_array: List[int]
 
 
 class MoveRequest(BaseModel):

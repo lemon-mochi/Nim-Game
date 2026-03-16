@@ -101,13 +101,17 @@ class Game:
                     self.optimal_computer_move()
 
             elif self.diff_level == Difficulty.HARD:
-                # in hard mode,
-                # there is a 75% chance that the computer makes the optimal move
-                random_int = np.random.randint(low=0, high=3)
-                if random_int < 1:
-                    self.easy_mode()
-                else:
+                # if there are two piles, the computer should make the optimal move
+                if self.num_active_piles == 2:
                     self.optimal_computer_move()
+                else:
+                    # in hard mode,
+                    # there is a 75% chance that the computer makes the optimal move
+                    random_int = np.random.randint(low=0, high=3)
+                    if random_int < 1:
+                        self.easy_mode()
+                    else:
+                        self.optimal_computer_move()
 
             else:
                 # with very hard and impossible mode,

@@ -149,8 +149,8 @@ class Game:
 
                 self.is_balanced()
 
-    def create_custom_pile(self, num_piles: int, num_per_array: np.ndarray) -> None:
-        self.piles = np.zeros(num_piles)
+    def create_custom_pile(self, num_piles: int, num_per_array: np.ndarray) -> None:     
+        self.piles = np.zeros(num_piles, dtype=int)
         for i in range(num_piles):
             self.piles[i] = num_per_array[i]
 
@@ -185,9 +185,9 @@ class Game:
         self.is_pvp = is_pvp
         self.player_goes_first = player_goes_first
         self.num_piles = num_piles
-        if min_per_pile >= max_per_pile:
-            print("Error:\tmin_per_pile is greater than or equal to max_per_pile")
-            return
+        if random_game:
+            if min_per_pile >= max_per_pile:
+                raise ValueError("tmin_per_pile is greater than or equal to max_per_pile")
         self.min_per_pile = min_per_pile
         self.max_per_pile = max_per_pile
         self.diff_level = diff_level

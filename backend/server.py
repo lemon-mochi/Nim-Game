@@ -59,6 +59,8 @@ def new_random_game(req: NewRandomGameRequest):
 
 @app.post("/new-custom-game")
 def new_custom_game(req: NewCustomGameRequest):
+    if len(req.custom_piles) != req.num_piles:
+        raise ValueError("num_piles must match length of custom_piles")
     global game
     game = Game(
         is_pvp=req.is_pvp,

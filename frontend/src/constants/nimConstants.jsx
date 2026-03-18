@@ -22,28 +22,4 @@ export function buildDefaultPiles(n) {
     return Array.from({ length: n }, () => defaultSetup.num_piles);
 }
 
-export function syncPileCount(newCount) {
-    const n = Math.max(2, Math.min(50, Number(newCount) || 2));
-    setSetup(s => ({ ...s, num_piles: n }));
-    setCustomPiles(prev => {
-        if (prev.length < n) return [...prev, ...buildDefaultPiles(n - prev.length)];
-        return prev.slice(0, n);
-    });
-}
-
-export function setPileValue(idx, val) {
-    const v = Math.max(1, Math.min(150, Number(val) || 1));
-    setCustomPiles(prev => prev.map((p, i) => (i === idx ? v : p)));
-}
-
-export function addPile() {
-    if (customPiles.length >= 50) return;
-    setCustomPiles(prev => [...prev, DEFAULT_PILE_SIZE]);
-    setSetup(s => ({ ...s, num_piles: s.num_piles + 1 }));
-    }
-
-export function removePile(idx) {
-    if (customPiles.length <= 2) return;
-    setCustomPiles(prev => prev.filter((_, i) => i !== idx));
-    setSetup(s => ({ ...s, num_piles: s.num_piles - 1 }));
-    }
+export const maxCustomAmount = 150;

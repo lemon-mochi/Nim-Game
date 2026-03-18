@@ -7,10 +7,7 @@ import {
   DIFFICULTIES,
   defaultSetup,
   buildDefaultPiles,
-  syncPileCount,
-  setPileValue,
-  addPile,
-  removePile 
+  maxCustomAmount,
 } from "./constants/nimConstants";
 
 export default function NimGame() {
@@ -40,6 +37,19 @@ export default function NimGame() {
     }
   }
 
+  async function applyAmount() {
+    if (selectedPile === null || amount < 1 || amount > 150) return;
+    setError("");
+    setLoading(true);
+    
+    setCustomPiles((prev) =>
+      prev.map((val, i) => (i === selectedPile ? amount : val))
+    );
+    setSelectedPile(null);
+    setAmount(1);
+    setLoading(false);
+  }
+
   async function buttonPress() {
     setError("");
     setLoading(true);
@@ -48,8 +58,14 @@ export default function NimGame() {
       setLoading(false);
       return;
     }
+    if (setup.num_piles > 50) {
+      setError("Maximum number of piles should be 50 or fewer.");
+      setLoading(false);
+      return;
+    }    
 
     if (customGame) {
+      setCustomPiles(buildDefaultPiles(setup.num_piles));
       setScreen("customize");
       setLoading(false);
       return;
@@ -61,11 +77,6 @@ export default function NimGame() {
     }
     if (setup.min_per_pile >= setup.max_per_pile) {
       setError("Max per pile must be strictly larger than min per pile.");
-      setLoading(false);
-      return;
-    }
-    if (setup.num_piles > 50) {
-      setError("Maximum number of piles should be 50 or fewer.");
       setLoading(false);
       return;
     }
@@ -140,7 +151,30 @@ export default function NimGame() {
       });
       if (!res.ok) throw new Error("Server error");
       const data = await res.json();
-      await launchGame(data);
+      setState(data);
+      setSelectedPile(null);
+      setAmount(1);
+      if (!setup.is_pvp) {
+        setTurnMsg(setup.player_goes_first ? "Your turn" : "Computer's turn — waiting...");
+      } else {
+        setTurnMsg("Player 1's turn");
+      }
+      
+      setScreen("game");
+      // If computer goes first in PvC
+      if (!setup.is_pvp && !setup.player_goes_first) {
+        // call the backend function
+        const res = await fetch(`${API}/computer_move`, {
+          method: "POST",
+        });
+        const data = await res.json();
+        setThinking(true);
+        setTimeout(async () => {
+          setThinking(false);
+          setState(data);
+          setTurnMsg("Your turn");
+        }, 1500);
+      }      
     } catch (e) {
       setError(`Could not connect to server. ${e}`);
     } finally {
@@ -363,90 +397,62 @@ export default function NimGame() {
 
 
         {screen === "customize" && (
-          <div className="setup-card">
-            {/* Header bar matching game status-bar */}
-            <div className="status-bar" style={{ marginBottom: "1rem" }}>
-              <div className="status-indicator">
-                <div className="status-dot" />
-                <span style={{ fontSize: 12 }}>Configure your piles</span>
-              </div>
-              <button className="reset-btn" onClick={resetToSetup}>↩ Back</button>
+          <div className="game-area">
+            <div className="status-bar">
+              Custom Game Configuration
+              <button className="reset-btn" onClick={resetToSetup}>↩ Return</button>
             </div>
- 
-            {error && <div className="error-msg">{error}</div>}
- 
-            <div className="setup-section-title">Pile Sizes</div>
-            <p style={{ fontSize: 12, color: "var(--global-muted)", margin: "0 0 1rem" }}>
-              Set how many sticks are in each pile. Min 1, max 150 per pile.
-            </p>
- 
-            {/* Pile editor rows */}
-            <div className="customize-pile-list">
-              {customPiles.map((count, idx) => (
-                <div key={idx} className="customize-pile-row">
-                  <span className="customize-pile-label">Pile {idx + 1}</span>
- 
-                  {/* Stepper */}
-                  <div className="move-amount-controls">
-                    <button className="amt-btn"
-                      disabled={count <= 1}
-                      onClick={() => setPileValue(idx, count - 1)}>−</button>
-                    <div className="amt-display">{count}</div>
-                    <button className="amt-btn"
-                      disabled={count >= 150}
-                      onClick={() => setPileValue(idx, count + 1)}>+</button>
-                  </div>
- 
-                  {/* Direct number input */}
-                  <input
-                    type="number"
-                    className="customize-pile-input"
-                    min={1}
-                    max={150}
-                    value={count}
-                    onChange={e => setPileValue(idx, e.target.value)}
-                  />
- 
-                  {/* Visual bar */}
-                  <div className="customize-pile-bar-track">
-                    <div
-                      className="customize-pile-bar-fill"
-                      style={{ width: `${Math.round((count / 150) * 100)}%` }}
-                    />
-                  </div>
- 
-                  {/* Remove button */}
-                  <button
-                    className="customize-remove-btn"
-                    disabled={customPiles.length <= 2}
-                    onClick={() => removePile(idx)}
-                    title="Remove pile"
-                  >✕</button>
-                </div>
+            <div className="piles-container">
+              {customPiles?.map((count, idx) => (
+                <PileCard
+                  key={idx}
+                  idx={idx}
+                  count={count}
+                  selected={selectedPile === idx}
+                  onSelect={(i) => {
+                    setSelectedPile(i);
+                    setAmount(1);
+                  }}
+                />
               ))}
             </div>
- 
-            {/* Add pile */}
-            <button
-              className="customize-add-btn"
-              disabled={customPiles.length >= 50}
-              onClick={addPile}
-            >
-              + Add Pile
-            </button>
- 
-            <div className="customize-summary">
-              {customPiles.length} pile{customPiles.length !== 1 ? "s" : ""} &nbsp;·&nbsp;
-              {customPiles.reduce((a, b) => a + b, 0)} total sticks
-            </div>
- 
-            <button
-              className="start-btn"
-              onClick={startCustomGame}
-              disabled={loading}
-            >
-              {loading ? "Starting..." : "Start Custom Game"}
-            </button>
+
+            {selectedPile !== null && (
+              <div className="move-panel">
+                <div className="move-panel-title">
+                  Set amount for pile {selectedPile + 1}
+                </div>
+                <div className="move-row">
+                  <span className="move-label">Amount:</span>
+                  <div className="move-amount-controls">
+                    <button className="amt-btn"
+                      disabled={amount <= 1}
+                      onClick={() => setAmount(a => Math.max(1, a - 1))}>−</button>
+                    <div className="amt-display">{amount}</div>
+                    <button className="amt-btn"
+                      disabled={amount >= maxCustomAmount}
+                      onClick={() => setAmount(a => Math.min(maxCustomAmount, a + 1))}>+</button>
+                  </div>
+                  <span style={ { fontSize: 11, color: "var(--global-muted)" } }>
+                    max: {maxCustomAmount}
+                  </span>
+                  <button
+                    className="confirm-btn"
+                    onClick={applyAmount}
+                    disabled={loading || amount < 1 || amount > maxCustomAmount}
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            )}
+            {selectedPile === null &&(
+              <button className="start-btn" onClick={startCustomGame} disabled={loading}>
+                {loading ? "Starting..." : "Start Game"}
+              </button>
+            )}
+
+
           </div>
         )}
 

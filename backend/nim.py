@@ -188,7 +188,7 @@ class Game:
         if random_game:
             if min_per_pile >= max_per_pile:
                 raise ValueError(
-                    "tmin_per_pile is greater than or equal to max_per_pile"
+                    "min_per_pile is greater than or equal to max_per_pile"
                 )
         self.min_per_pile = min_per_pile
         self.max_per_pile = max_per_pile

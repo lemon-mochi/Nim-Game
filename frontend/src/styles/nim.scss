@@ -282,6 +282,20 @@ body {
 .confirm-btn:hover:not(:disabled) { background: #d8ff50; }
 .confirm-btn:disabled { opacity: 0.35; cursor: default; }
 
+.cancel-btn {
+  padding: 9px 28px;
+  background: transparent;
+  color: $global-muted;
+  font-family: $global-font-title;
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  border: 1px solid $global-border;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.cancel-btn:hover { color: $global-text; border-color: $global-muted; }
+
 /* GAME OVER */
 .gameover-overlay {
   background: $global-surface;

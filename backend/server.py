@@ -3,16 +3,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from nim import Game, Difficulty
 from typing import List
+import os
+from dotenv import load_dotenv
+
 
 app = FastAPI()
+load_dotenv()
+origin = os.getenv("ORIGIN")
 
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=["http://localhost:3000"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
-    allow_origins=["*"],
+    allow_origins=origin,
 )
 
 # ---- GLOBAL STATE ----

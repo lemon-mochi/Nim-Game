@@ -185,11 +185,6 @@ class Game:
         self.is_pvp = is_pvp
         self.player_goes_first = player_goes_first
         self.num_piles = num_piles
-        if random_game:
-            if min_per_pile >= max_per_pile:
-                raise ValueError(
-                    "min_per_pile is greater than or equal to max_per_pile"
-                )
         self.min_per_pile = min_per_pile
         self.max_per_pile = max_per_pile
         self.diff_level = diff_level
@@ -199,7 +194,14 @@ class Game:
         )
         self.game_over = False
 
+        if num_piles <= 1:
+            raise ValueError("num_piles is 1 or less")
+
         if random_game:
+            if min_per_pile >= max_per_pile:
+                raise ValueError(
+                    "min_per_pile is greater than or equal to max_per_pile"
+                )
             self.create_random_pile(num_piles, min_per_pile, max_per_pile)
         else:
             self.create_custom_pile(num_piles, num_per_array)

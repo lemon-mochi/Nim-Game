@@ -1,6 +1,5 @@
 import "./styles/globals.scss"
 import "./styles/nim.scss";
-import "@/components/SetupScreen/SetupScreen";
 import { useNimGame } from "@/hooks/useNimGame";
 import SetupScreen from "@/components/SetupScreen/SetupScreen";
 import CustomizationScreen from "@/components/CustomizationScreen/CustomizationScreen";

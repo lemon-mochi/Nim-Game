@@ -8,8 +8,10 @@ https://github.com/LazarPajic/Math302-Wythoff-s-Game
 
 from enum import Enum
 import math
+import numpy as np
 
 PHI = (1 + math.sqrt(5)) / 2
+rng = np.random.default_rng()
 
 
 class Difficulty(Enum):
@@ -90,14 +92,18 @@ class Game:
                 # The computer does not want to reduce the pile with 1 to 0.
                 if swapped:
                     self.play_round(move_type=MoveType.FIRST_PILE, to_subtract=1)
+                    return
                 else:
                     self.play_round(move_type=MoveType.SECOND_PILE, to_subtract=1)
+                    return
             else:
                 # simply take one from the smaller pile
                 if swapped:
                     self.play_round(move_type=MoveType.SECOND_PILE, to_subtract=1)
+                    return
                 else:
                     self.play_round(move_type=MoveType.FIRST_PILE, to_subtract=1)
+                    return
 
         else:
             # Strategy 1: Take from BOTH piles equally
@@ -108,6 +114,9 @@ class Game:
                 amt = temp_x - a
                 if amt > 0:
                     self.play_round(move_type=MoveType.BOTH, to_subtract=amt)
+                    return
+                else:
+                    print(f"amt: {amt} is <= 0")
 
             # Strategy 2: Take from the LARGER pile (currently y)
             # We must find a P-position that already contains 'x' as one of its values.
@@ -123,11 +132,13 @@ class Game:
                                 move_type=MoveType.FIRST_PILE,
                                 to_subtract=temp_y - target_y,
                             )
+                            return
                         else:
                             self.play_round(
-                                mvoe_type=MoveType.SECOND_PILE,
+                                move_type=MoveType.SECOND_PILE,
                                 to_subtract=temp_y - target_y,
                             )
+                            return
 
             # Check if x represents the larger value (b_k) in a P-position pair
             k_est = int(temp_x * (2 - PHI))
@@ -140,11 +151,13 @@ class Game:
                                 move_type=MoveType.FIRST_PILE,
                                 to_subtract=temp_y - target_y,
                             )
+                            return
                         else:
                             self.play_round(
                                 move_type=MoveType.SECOND_PILE,
                                 to_subtract=temp_y - target_y,
                             )
+                            return
 
             # Strategy 3: Take from the SMALLER pile (currently x)
             # We must find a P-position that already contains 'y'
@@ -159,26 +172,118 @@ class Game:
                                 move_type=MoveType.SECOND_PILE,
                                 to_subtract=temp_x - target_x,
                             )
+                            return
                         else:
                             self.play_round(
                                 move_type=MoveType.FIRST_PILE,
                                 to_subtract=temp_x - target_x,
                             )
+                            return
+
+    def easy_mode(self) -> None:
+        rand_idx = rng.integers(low=1, high=4)
+        if rand_idx == 1:
+            to_pick_up = rng.integers(low=1, high=self.x + 1)
+        if rand_idx == 2:
+            to_pick_up = rng.integers(low=1, high=self.y + 1)
+        else:
+            to_pick_up = rng.integers(low=1, high=min(self.x, self.y) + 1)
+
+        self.play_round(move_type=rand_idx, to_subtract=to_pick_up)
+
+    def computer_move(self) -> None:
+        # if there is one pile or both piles are the same,
+        # the computer should win regardless of difficulty level
+        if self.x == 0:
+            self.play_round(move_type=MoveType.SECOND_PILE, to_subtract=self.y)
+        elif self.y == 0:
+            self.play_round(move_type=MoveType.FIRST_PILE, to_subtract=self.x)
+        elif self.x == self.y:
+            self.play_round(move_type=MoveType.BOTH, to_subtract=self.x)
+
+        else:
+            # the computer makes different moves depending on the difficulty level
+            if self.diff_level == Difficulty.EASY:
+                # if the difficulty level is easy,
+                # pick a random move type and remove a random number of stones
+                self.easy_mode()
+
+            elif self.diff_level == Difficulty.MEDIUM:
+                # with medium mode,
+                # there is a 50% chance that the computer makes the optimal move
+                random_int = np.random.randint(low=0, high=3)
+                if random_int < 2:
+                    self.easy_mode()
+                else:
+                    self.optimal_computer_move()
+
+            elif self.diff_level == Difficulty.HARD:
+                # if there are two piles, the computer should make the optimal move
+                if self.num_active_piles == 2:
+                    self.optimal_computer_move()
+                else:
+                    # in hard mode,
+                    # there is a 75% chance that the computer makes the optimal move
+                    random_int = np.random.randint(low=0, high=3)
+                    if random_int < 1:
+                        self.easy_mode()
+                    else:
+                        self.optimal_computer_move()
+
+            else:
+                # with very hard and impossible mode,
+                # the computer alwasy makes the optimal move
+                self.optimal_computer_move()
 
     def __init__(
         self,
         is_pvp: bool,
         player_goes_first: bool,
         random_game: bool,
-        x: int,
-        y: int,
+        min_per_pile: int = 0,
+        max_per_pile: int = 0,
         diff_level: Difficulty = Difficulty.EASY,
+        x: int = None,
+        y: int = None,
     ):
         self.is_pvp = is_pvp
         self.player_goes_first = player_goes_first
         self.random_game = random_game
-        self.x = x
-        self.y = y
         self.diff_level = diff_level
+
+        if not random_game:
+            self.x = x
+            self.y = y
+        else:
+            if min_per_pile >= max_per_pile:
+                raise ValueError(
+                    "min_per_pile is greater than or equal to max_per_pile"
+                )
+
+            # in impossible mode, the game is actually impossible for the player to win
+            # if the computer is first, the game should be unbalanced.
+            # if the player is first, the game should be unbalanced.
+            # if the game is person vs person, it does not matter
+
+            self.x = rng.integers(low=min_per_pile, high=max_per_pile + 1)
+            self.y = rng.integers(low=min_per_pile, high=max_per_pile + 1)
+
+            # x and y should not be the same, because then the game would become trivial
+            while self.x == self.y:
+                self.x = rng.integers(low=min_per_pile, high=max_per_pile + 1)
+                self.y = rng.integers(low=min_per_pile, high=max_per_pile + 1)
+
+            if not self.is_pvp and self.diff_level == Difficulty.IMPOSSIBLE:
+                if not self.is_balanced() and self.player_goes_first:
+                    # Idea: keep generating boards until it is balanced
+
+                    while not self.is_balanced() or self.x == self.y:
+                        self.x = rng.integers(low=min_per_pile, high=max_per_pile + 1)
+                        self.y = rng.integers(low=min_per_pile, high=max_per_pile + 1)
+
+                if self.is_balanced() and not self.player_goes_first:
+                    while self.is_balanced() or self.x == self.y:
+                        self.x = rng.integers(low=min_per_pile, high=max_per_pile + 1)
+                        self.y = rng.integers(low=min_per_pile, high=max_per_pile + 1)
 
         self.game_over = False

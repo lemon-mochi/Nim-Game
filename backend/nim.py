@@ -80,7 +80,7 @@ class Game:
             self.play_round(pile_idx=rand_idx, to_subtract=1)
             return
 
-        to_pick_up = np.random.randint(low=1, high=self.piles[rand_idx])
+        to_pick_up = np.random.randint(low=1, high=self.piles[rand_idx] + 1)
 
         self.play_round(pile_idx=rand_idx, to_subtract=to_pick_up)
 
@@ -191,8 +191,6 @@ class Game:
         self.is_pvp = is_pvp
         self.player_goes_first = player_goes_first
         self.num_piles = num_piles
-        self.min_per_pile = min_per_pile
-        self.max_per_pile = max_per_pile
         self.diff_level = diff_level
 
         self.num_active_piles = (

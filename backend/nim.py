@@ -1,3 +1,9 @@
+"""
+nim.py
+------
+This file contains the code needed to run the backend of Nim game
+"""
+
 import numpy as np
 from prettytable import PrettyTable
 from enum import Enum

@@ -1,3 +1,9 @@
+"""
+wythoffs.py
+-----------
+This file contains the code needed to run the backend of Wythoff's game
+"""
+
 from enum import Enum
 import math
 

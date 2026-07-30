@@ -1,3 +1,9 @@
+"""
+server.py
+---------
+This file handles the backend server of the web game.
+"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel

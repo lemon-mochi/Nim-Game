@@ -4,6 +4,9 @@ export default function SetupScreen({
     error,
     setup,
     setSetup,
+    toggleWythoffGameOff,
+    toggleWythoffGameOn,
+    wythoff,
     toggleCustomGameOff,
     toggleCustomGameOn,
     customGame,
@@ -14,10 +17,31 @@ export default function SetupScreen({
 return (
     <>
         <div className="setup-card">
-            <div className="rules-badge">
-            Rules of Nim Game: <br></br>
-            Two players. Players take turns removing any number of sticks from a single pile (at least one). The last player to make a move is the winner.
+            <div className="setup-section-title">Game</div>
+            <div className="toggle-group">
+                <button
+                className={`toggle-btn${!wythoff ? " active" : ""}`}
+                onClick={() => toggleWythoffGameOff()}
+                >Classical Nim</button>
+                <button
+                className={`toggle-btn${wythoff ? " active" : ""}`}
+                onClick={() => toggleWythoffGameOn()}
+                >Wythoff's game</button>
             </div>
+        </div>
+        <div className="setup-card">
+            {!wythoff &&
+                <div className="rules-badge">
+                Rules of Classical Nim: <br></br>
+                Two players. Players take turns removing any number of sticks from a single pile (at least one). The last player to make a move is the winner.
+                </div>
+            }
+            {wythoff &&
+                <div className="rules-badge">
+                Rules of Wythoff's game: <br></br>
+                Two players. Two piles of sticks. Players may take any number of sticks greater than zero from the first or second pile, or they may take the same number of sticks from both piles. The last player to make a move is the winner.
+                </div>
+            }
         </div>
         <div className="setup-card">
             {error && <div className="error-msg">{error}</div>}
@@ -83,11 +107,13 @@ return (
             {/* the following line adds extra space to make it look cleaner */}
             <div className="setup-section-title"></div>
             <div className="field-row">
-                <div className="field">
-                <label>Number of Piles</label>
-                <input type="number" value={setup.num_piles}
-                    onChange={e => setSetup(s => ({ ...s, num_piles: e.target.value }))} />
-                </div>
+                {!wythoff && (
+                    <div className="field">
+                    <label>Number of Piles</label>
+                    <input type="number" value={setup.num_piles}
+                        onChange={e => setSetup(s => ({ ...s, num_piles: e.target.value }))} />
+                    </div>
+                )}
                 {!customGame && (
                 <>
                     <div className="field">
@@ -99,6 +125,20 @@ return (
                     <label>Max per Pile</label>
                     <input type="number" value={setup.max_per_pile}
                         onChange={e => setSetup(s => ({ ...s, max_per_pile: e.target.value }))} />
+                    </div>
+                </>
+                )}
+                {wythoff && customGame && (
+                <>
+                    <div className="field">
+                    <label>Sticks in first pile</label>
+                    <input type="number" value={setup.x}
+                        onChange={e => setSetup(s => ({...s, x: e.target.value }))} />
+                    </div>
+                    <div className="field">
+                    <label>Sticks in second pile</label>
+                    <input type="number" value={setup.y}
+                        onChange={e => setSetup(s => ({...s, y: e.target.value }))} />
                     </div>
                 </>
                 )}

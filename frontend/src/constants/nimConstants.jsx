@@ -16,6 +16,8 @@ export const defaultSetup = {
     max_per_pile: 10,
     difficulty: 2,
     random_game: true,
+    x: 5, // for first pile in wythoff's game
+    y: 5 // for second pile in wythoff's game
 };
 
 export function buildDefaultPiles(n) {

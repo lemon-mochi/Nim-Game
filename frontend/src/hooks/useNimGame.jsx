@@ -12,6 +12,7 @@ export function useNimGame() {
   const [error, setError] = useState("");
   const [turnMsg, setTurnMsg] = useState("");
   const [winner, setWinner] = useState("");
+  const [wythoff, setWythoff] = useState(false);
   const [customGame, setCustomGame] = useState(false);
   const [buttonMsg, setButtonMsg] = useState("Start Game");
   const [customPiles, setCustomPiles] = useState(buildDefaultPiles(defaultSetup.num_piles));
@@ -26,6 +27,16 @@ export function useNimGame() {
   async function toggleCustomGameOn() {
     setCustomGame(true);
     setButtonMsg("Continue");
+  }
+
+  async function toggleWythoffGameOff() {
+    console.log("off");
+    setWythoff(false);
+  }
+
+  async function toggleWythoffGameOn() {
+    console.log("on");
+    setWythoff(true);
   }
 
   async function applyAmount() {
@@ -55,7 +66,7 @@ export function useNimGame() {
       return;
     }    
 
-    if (customGame) {
+    if (!wythoff && customGame) {
       setCustomPiles(buildDefaultPiles(setup.num_piles));
       setScreen("customize");
       setLoading(false);
@@ -283,7 +294,8 @@ export function useNimGame() {
     turnMsg, setTurnMsg, winner, setWinner, customGame, setCustomGame, buttonMsg,
     setButtonMsg, customPiles, setCustomPiles, maxAmount, toggleCustomGameOff,
     toggleCustomGameOn, applyAmount, buttonPress, startCustomGame, makeMove,
-    resetToSetup, isPlayerTurn, winMessage
+    resetToSetup, isPlayerTurn, winMessage,
+    wythoff, toggleWythoffGameOff, toggleWythoffGameOn,
   }
 
 }

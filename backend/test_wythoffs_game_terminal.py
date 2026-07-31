@@ -13,13 +13,13 @@ from prettytable import PrettyTable
 
 
 is_pvp = False
-player_goes_first = True
+player_goes_first = False
 random_game = True
 mode = Difficulty.IMPOSSIBLE
 
 # True means the current player is the player.
 # False means the current player is the computer
-current_player = True
+current_player = False
 
 
 def display_piles(game: Game):

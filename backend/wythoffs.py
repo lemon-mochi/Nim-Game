@@ -75,110 +75,88 @@ class Game:
             self.game_over = True
 
     def optimal_computer_move(self) -> None:
-        swapped = False
-        if self.x > self.y:
-            temp_x, temp_y = self.y, self.x
-            swapped = True
+        # Sort the piles so x <= y
+        if self.x <= self.y:
+            x, y = self.x, self.y
+            smaller = MoveType.FIRST_PILE
+            larger = MoveType.SECOND_PILE
         else:
-            temp_x, temp_y = self.x, self.y
+            x, y = self.y, self.x
+            smaller = MoveType.SECOND_PILE
+            larger = MoveType.FIRST_PILE
 
         if self.is_balanced():
             # game is balanced. No optimal move exists.
             # moves to avoid: reducing one pile to 0; equalizing both piles
             # safeset move is to remove one from the smaller pile,
             # unless the smaller pile only has one stone
-            if temp_x == 1:
+            if x == 1:
                 # this means one pile is at 1 and the other isn't.
                 # The computer does not want to reduce the pile with 1 to 0.
-                if swapped:
-                    self.play_round(move_type=MoveType.FIRST_PILE, to_subtract=1)
-                    return
-                else:
-                    self.play_round(move_type=MoveType.SECOND_PILE, to_subtract=1)
-                    return
+                self.play_round(move_type=larger, to_subtract=1)
+                return
             else:
                 # simply take one from the smaller pile
-                if swapped:
-                    self.play_round(move_type=MoveType.SECOND_PILE, to_subtract=1)
-                    return
-                else:
-                    self.play_round(move_type=MoveType.FIRST_PILE, to_subtract=1)
-                    return
+                self.play_round(move_type=smaller, to_subtract=1)
+                return
 
         else:
-            # Strategy 1: Take from BOTH piles equally
-            # The difference between piles (k) remains identical.
-            k = self.y - self.x
-            a = int(k * PHI)
-            if temp_x >= a:
-                amt = temp_x - a
-                if amt > 0:
-                    self.play_round(move_type=MoveType.BOTH, to_subtract=amt)
+            # ------------------------------------------------------------------
+            # Strategy 1:
+            # Remove equally from both piles.
+            # ------------------------------------------------------------------
+            k = y - x
+            target_x = int(k * PHI)
+            target_y = target_x + k
+
+            if x >= target_x:
+                amount = x - target_x
+
+                if amount > 0 and y - amount == target_y:
+                    self.play_round(move_type=MoveType.BOTH, to_subtract=amount)
                     return
-                else:
-                    print(f"amt: {amt} is <= 0")
 
-            # Strategy 2: Take from the LARGER pile (currently y)
-            # We must find a P-position that already contains 'x' as one of its values.
+            # ------------------------------------------------------------------
+            # Strategy 2:
+            # Remove only from the larger pile.
+            # ------------------------------------------------------------------
 
-            # Check if x represents the smaller value (a_k) in a P-position pair
-            k_est = int(temp_x * (PHI - 1))
-            for k in (k_est - 1, k_est, k_est + 1, k_est + 2):
-                if k >= 0 and int(k * PHI) == temp_x:
-                    target_y = temp_x + k
-                    if temp_y > target_y:
-                        if swapped:
-                            self.play_round(
-                                move_type=MoveType.FIRST_PILE,
-                                to_subtract=temp_y - target_y,
-                            )
-                            return
-                        else:
-                            self.play_round(
-                                move_type=MoveType.SECOND_PILE,
-                                to_subtract=temp_y - target_y,
-                            )
-                            return
+            # Case 1: x is the smaller Beatty value.
+            k_est = int(x * (PHI - 1))
+            for k in range(max(0, k_est - 2), k_est + 3):
+                if int(k * PHI) == x:
+                    target_y = x + k
+                    if y > target_y:
+                        self.play_round(move_type=larger, to_subtract=y - target_y)
+                        return
 
-            # Check if x represents the larger value (b_k) in a P-position pair
-            k_est = int(temp_x * (2 - PHI))
-            for k in (k_est - 1, k_est, k_est + 1, k_est + 2):
-                if k >= 0 and int(k * PHI) + k == temp_x:
-                    target_y = int(k * PHI)
-                    if temp_y > target_y:
-                        if swapped:
-                            self.play_round(
-                                move_type=MoveType.FIRST_PILE,
-                                to_subtract=temp_y - target_y,
-                            )
-                            return
-                        else:
-                            self.play_round(
-                                move_type=MoveType.SECOND_PILE,
-                                to_subtract=temp_y - target_y,
-                            )
-                            return
+            # Case 2: x is the larger Beatty value.
+            k_est = int(x * (2 - PHI))
+            for k in range(max(0, k_est - 2), k_est + 3):
+                if int(k * PHI) + k == x:
+                    target_other = int(k * PHI)
+                    if y > target_other:
+                        self.play_round(move_type=larger, to_subtract=y - target_other)
+                        return
 
-            # Strategy 3: Take from the SMALLER pile (currently x)
-            # We must find a P-position that already contains 'y'
-            # as its larger value (b_k).
-            k_est = int(temp_y * (2 - PHI))
-            for k in (k_est - 1, k_est, k_est + 1, k_est + 2):
-                if k >= 0 and int(k * PHI) + k == temp_y:
+            # ------------------------------------------------------------------
+            # Strategy 3:
+            # Remove only from the smaller pile.
+            # ------------------------------------------------------------------
+            k_est = int(y * (2 - PHI))
+            for k in range(max(0, k_est - 2), k_est + 3):
+                if int(k * PHI) + k == y:
                     target_x = int(k * PHI)
-                    if temp_x > target_x:
-                        if swapped:
-                            self.play_round(
-                                move_type=MoveType.SECOND_PILE,
-                                to_subtract=temp_x - target_x,
-                            )
-                            return
-                        else:
-                            self.play_round(
-                                move_type=MoveType.FIRST_PILE,
-                                to_subtract=temp_x - target_x,
-                            )
-                            return
+                    if x > target_x:
+                        self.play_round(move_type=smaller, to_subtract=x - target_x)
+                        return
+
+            # ------------------------------------------------------------------
+            # This should never happen if the strategy is correct.
+            # ------------------------------------------------------------------
+            raise RuntimeError(
+                f"No optimal move found from position ({self.x}, {self.y})."
+            )
 
     def easy_mode(self) -> None:
         rand_idx = rng.integers(low=1, high=4)
@@ -218,8 +196,8 @@ class Game:
                     self.optimal_computer_move()
 
             elif self.diff_level == Difficulty.HARD:
-                # if there are two piles, the computer should make the optimal move
-                if self.num_active_piles == 2:
+                # if the game is near the end, the computer should make the optimal move
+                if self.x <= 4 and self.y <= 4:
                     self.optimal_computer_move()
                 else:
                     # in hard mode,
@@ -260,11 +238,6 @@ class Game:
                     "min_per_pile is greater than or equal to max_per_pile"
                 )
 
-            # in impossible mode, the game is actually impossible for the player to win
-            # if the computer is first, the game should be unbalanced.
-            # if the player is first, the game should be unbalanced.
-            # if the game is person vs person, it does not matter
-
             self.x = rng.integers(low=min_per_pile, high=max_per_pile + 1)
             self.y = rng.integers(low=min_per_pile, high=max_per_pile + 1)
 
@@ -272,6 +245,11 @@ class Game:
             while self.x == self.y:
                 self.x = rng.integers(low=min_per_pile, high=max_per_pile + 1)
                 self.y = rng.integers(low=min_per_pile, high=max_per_pile + 1)
+
+            # in impossible mode, the game is actually impossible for the player to win
+            # if the computer is first, the game should be unbalanced.
+            # if the player is first, the game should be unbalanced.
+            # if the game is person vs person, it does not matter
 
             if not self.is_pvp and self.diff_level == Difficulty.IMPOSSIBLE:
                 if not self.is_balanced() and self.player_goes_first:

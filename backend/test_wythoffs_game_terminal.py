@@ -8,7 +8,7 @@ Usage:
     python test_wythoffs_game_terminal.py
 """
 
-from wythoffs import Game, Difficulty, MoveType, np
+from backend.games.wythoffs import Game, Difficulty, MoveType, np
 from prettytable import PrettyTable
 
 

@@ -8,7 +8,7 @@ Usage:
     python test_nim_terminal.py
 """
 
-from nim import Game, Difficulty
+from backend.games.nim import Game, Difficulty
 
 
 is_pvp = False

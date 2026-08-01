@@ -6,7 +6,7 @@ Inspiration from the following project:
 https://github.com/LazarPajic/Math302-Wythoff-s-Game
 """
 
-from enum import Enum
+from constants import Difficulty, MoveType
 import math
 import numpy as np
 
@@ -14,21 +14,7 @@ PHI = (1 + math.sqrt(5)) / 2
 rng = np.random.default_rng()
 
 
-class Difficulty(Enum):
-    EASY = 1
-    MEDIUM = 2
-    HARD = 3
-    VERY_HARD = 4
-    IMPOSSIBLE = 5
-
-
-class MoveType(Enum):
-    FIRST_PILE = 1
-    SECOND_PILE = 2
-    BOTH = 3
-
-
-class Game:
+class WythoffGame:
     # is_pvp = False  # whether game is played between two people or person vs computer
     # is_balanced_flag = True  # whether the game is balanced or not
     # player_goes_first = True # whether the player
@@ -265,3 +251,10 @@ class Game:
                         self.y = rng.integers(low=min_per_pile, high=max_per_pile + 1)
 
         self.game_over = False
+
+    def state(self):
+        return {
+            "x": self.x,
+            "y": self.y,
+            "game_over": bool(self.game_over),
+        }

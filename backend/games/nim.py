@@ -6,15 +6,7 @@ This file contains the code needed to run the backend of Nim game
 
 import numpy as np
 from prettytable import PrettyTable
-from enum import Enum
-
-
-class Difficulty(Enum):
-    EASY = 1
-    MEDIUM = 2
-    HARD = 3
-    VERY_HARD = 4
-    IMPOSSIBLE = 5
+from constants import Difficulty
 
 
 class Game:
@@ -209,3 +201,11 @@ class Game:
             self.create_random_pile(num_piles, min_per_pile, max_per_pile)
         else:
             self.create_custom_pile(num_piles, num_per_array)
+
+    def state(self):
+        return {
+            "piles": self.piles.tolist(),
+            "nim_sum": int(self.nim_sum),
+            "balanced": bool(self.is_balanced_flag),
+            "game_over": bool(self.game_over),
+        }

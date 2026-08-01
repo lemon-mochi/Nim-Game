@@ -32,7 +32,7 @@ def new_custom_game(req: NewCustomGameRequest):
     if len(req.custom_piles) != req.num_piles:
         raise ValueError("num_piles must match length of custom_piles")
     global game
-    game = Game(
+    state.game = Game(
         is_pvp=req.is_pvp,
         player_goes_first=req.player_goes_first,
         num_piles=req.num_piles,
@@ -40,7 +40,7 @@ def new_custom_game(req: NewCustomGameRequest):
         diff_level=req.difficulty,
         num_per_array=req.custom_piles,
     )
-    return get_state()
+    return state.game.state()
 
 
 @router.post("/human-move")

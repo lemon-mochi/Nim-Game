@@ -8,7 +8,7 @@ from models.wythoffs import (
 )
 import state
 
-router = APIRouter(prefix="/wythoff", tags=["Wythoff"])
+router = APIRouter(prefix="/wythoffs", tags=["Wythoffs"])
 
 
 @router.post("/new-random-game")

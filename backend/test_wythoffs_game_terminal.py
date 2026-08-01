@@ -8,7 +8,8 @@ Usage:
     python test_wythoffs_game_terminal.py
 """
 
-from backend.games.wythoffs import Game, Difficulty, MoveType, np
+from constants import Difficulty, MoveType
+from games.wythoffs import WythoffGame, np
 from prettytable import PrettyTable
 
 
@@ -22,7 +23,7 @@ mode = Difficulty.IMPOSSIBLE
 current_player = False
 
 
-def display_piles(game: Game):
+def display_piles(game: WythoffGame):
     # this function is for displaying the pile nicely in the terminal
     table = PrettyTable()
     table.field_names = np.arange(1, 3)
@@ -30,7 +31,7 @@ def display_piles(game: Game):
     print(table)
 
 
-game = Game(
+game = WythoffGame(
     is_pvp=False,
     player_goes_first=player_goes_first,
     min_per_pile=5,

@@ -364,3 +364,37 @@ body {
   border-radius: 2px;
   background: rgba(255,77,77,0.05);
 }
+
+.bothPilesBtn {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px dashed var(--global-border);
+  color: var(--global-muted);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.bothPilesBtn:hover:not(:disabled) {
+  border-color: var(--global-accent);
+  color: var(--global-accent);
+  background: rgba(200, 240, 68, 0.05);
+}
+
+.bothPilesBtn.active {
+  background: var(--global-accent);
+  color: #000;
+  border-color: var(--global-accent);
+  font-weight: 700;
+}
+
+.bothPilesBtn::before {
+  content: "↕";
+  margin-right: 8px;
+}

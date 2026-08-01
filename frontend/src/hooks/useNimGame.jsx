@@ -17,7 +17,16 @@ export function useNimGame() {
   const [buttonMsg, setButtonMsg] = useState("Start Game");
   const [customPiles, setCustomPiles] = useState(buildDefaultPiles(defaultSetup.num_piles));
 
-  const maxAmount = selectedPile !== null && state ? state.piles[selectedPile] : 1;
+const maxAmount =
+  state?.piles && selectedPile !== null
+    ? wythoff
+      ? selectedPile === 0
+        ? state.piles[0]
+        : selectedPile === 1
+          ? state.piles[1]
+          : Math.min(state.piles[0], state.piles[1])
+      : state.piles[selectedPile]
+    : 1;
 
   async function toggleCustomGameOff() {
     setCustomGame(false);
@@ -30,12 +39,10 @@ export function useNimGame() {
   }
 
   async function toggleWythoffGameOff() {
-    console.log("off");
     setWythoff(false);
   }
 
   async function toggleWythoffGameOn() {
-    console.log("on");
     setWythoff(true);
   }
 
@@ -52,147 +59,155 @@ export function useNimGame() {
     setLoading(false);
   }
 
-  async function buttonPress() {
-    setError("");
-    setLoading(true);
+async function buttonPress() {
+  setError("");
+  setLoading(true);
 
+  try {
+    // Common validation
     if (setup.min_per_pile < 1 || setup.max_per_pile < 1) {
       setError("Each pile must have at least one stick.");
-      setLoading(false);
       return;
     }
 
     if (setup.min_per_pile >= setup.max_per_pile) {
       setError("Max per pile must be strictly larger than min per pile.");
-      setLoading(false);
-      return;
-    }
-    if (setup.max_per_pile > 150) {
-      setError("Max per pile should be 150 or fewer.");
-      setLoading(false);
       return;
     }
 
+    if (setup.max_per_pile > 150) {
+      setError("Max per pile should be 150 or fewer.");
+      return;
+    }
+
+    let newGameEndpoint;
+    let computerEndpoint;
+
     if (!wythoff) {
+      // Classical Nim validation
       if (setup.num_piles <= 1) {
         setError("At least two piles required.");
-        setLoading(false);
         return;
       }
+
       if (setup.num_piles > 50) {
         setError("Maximum number of piles should be 50 or fewer.");
-        setLoading(false);
         return;
-      }    
+      }
 
       if (customGame) {
         setCustomPiles(buildDefaultPiles(setup.num_piles));
         setScreen("customize");
-        setLoading(false);
         return;
       }
 
-      try {
-        const res = await fetch(`${API}/nim/new-random-game`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...setup,
-            num_piles: Number(setup.num_piles),
-            min_per_pile: Number(setup.min_per_pile),
-            max_per_pile: Number(setup.max_per_pile),
-          }),
-        });
-        if (!res.ok) throw new Error("Server error");
-        const data = await res.json();
-        setState(data);
-        setSelectedPile(null);
-        setAmount(1);
-        if (!setup.is_pvp) {
-          setTurnMsg(setup.player_goes_first ? "Your turn" : "Computer's turn — waiting...");
-        } else {
-          setTurnMsg("Player 1's turn");
-        }
-        
-        setScreen("game");
-        // If computer goes first in PvC
-        if (!setup.is_pvp && !setup.player_goes_first) {
-          // call the backend function
-          const res = await fetch(`${API}/nim/computer-move`, {
-            method: "POST",
-          });
-          const data = await res.json();
-          setThinking(true);
-          setTimeout(async () => {
-            setThinking(false);
-            setState(data);
-            setTurnMsg("Your turn");
-          }, 1500);
-        }
-      } catch (e) {
-        setError(`Could not connect to server. ${e}`);
-      } finally {
-        setLoading(false);
-      }
+      newGameEndpoint = "/nim/new-random-game";
+      computerEndpoint = "/nim/computer-move";
+
     } else {
-        // setup for Wythoff's game
-        if (customGame) {
-          if (setup.x == setup.y) {
-            setError("The two piles must have a different number of sticks");
-            setLoading(false);
-            return;
-          }
-
-          try {
-            const res = await fetch(`${API}/wythoffs/new-custom-game`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                x: Number(setup.x),
-                y: Number(setup.y),
-                difficulty: setup.difficulty,
-                is_pvp: setup.is_pvp,
-                player_goes_first: setup.player_goes_first,
-              }),
-            });
-            if (!res.ok) throw new Error("Server error");
-            const data = await res.json();
-            console.log('here');
-            console.log(data);
-            setState(data);
-            setSelectedPile(null);
-            setAmount(1);
-            if (!setup.is_pvp) {
-              setTurnMsg(setup.player_goes_first ? "Your turn" : "Computer's turn — waiting...");
-            } else {
-              setTurnMsg("Player 1's turn");
-            }
-
-            setScreen("game");
-            // If computer goes first in PvC
-            if (!setup.is_pvp && !setup.player_goes_first) {
-              // call the backend function
-              const res = await fetch(`${API}/wythoffs/computer-move`, {
-                method: "POST",
-              });
-              const data = await res.json();
-              setThinking(true);
-              setTimeout(async () => {
-                setThinking(false);
-                setState(data);
-                setTurnMsg("Your turn");
-              }, 1500);
-            }
-          } catch (e) {
-            setError(`Could not connect to server. ${e}`);
-          } finally {
-            setLoading(false);
-          }
-          
-        }
+      // Wythoff validation
+      if (customGame && setup.x === setup.y) {
+        setError("The two piles must have a different number of sticks.");
+        return;
       }
 
+      newGameEndpoint = customGame
+        ? "/wythoffs/new-custom-game"
+        : "/wythoffs/new-random-game";
+
+      computerEndpoint = "/wythoffs/computer-move";
+    }
+
+
+    let body;
+
+    if (!wythoff) {
+      body = {
+        ...setup,
+        num_piles: Number(setup.num_piles),
+        min_per_pile: Number(setup.min_per_pile),
+        max_per_pile: Number(setup.max_per_pile),
+      };
+    } 
+    else if (customGame) {
+      body = {
+        x: Number(setup.x),
+        y: Number(setup.y),
+        difficulty: setup.difficulty,
+        is_pvp: setup.is_pvp,
+        player_goes_first: setup.player_goes_first,
+      };
+    } 
+    else {
+      body = {
+        is_pvp: setup.is_pvp,
+        player_goes_first: setup.player_goes_first,
+        min_per_pile: Number(setup.min_per_pile),
+        max_per_pile: Number(setup.max_per_pile),
+        difficulty: setup.difficulty,
+      };
+    }
+
+
+    const res = await fetch(`${API}${newGameEndpoint}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      throw new Error("Server error");
+    }
+
+    let data = await res.json();
+
+    setState(data);
+    setSelectedPile(null);
+    setAmount(1);
+
+    if (!setup.is_pvp) {
+      setTurnMsg(
+        setup.player_goes_first
+          ? "Your turn"
+          : "Computer's turn — waiting..."
+      );
+    } else {
+      setTurnMsg("Player 1's turn");
+    }
+
+    setScreen("game");
+
+
+    // Computer starts
+    if (!setup.is_pvp && !setup.player_goes_first) {
+
+      const computerRes = await fetch(
+        `${API}${computerEndpoint}`,
+        {
+          method: "POST",
+        }
+      );
+
+      const computerData = await computerRes.json();
+
+      setThinking(true);
+
+      setTimeout(() => {
+        setThinking(false);
+        setState(computerData);
+        setTurnMsg("Your turn");
+      }, 1500);
+    }
+
+
+  } catch (e) {
+    setError(`Could not connect to server. ${e.message}`);
+  } finally {
+    setLoading(false);
   }
+}
 
   async function startCustomGame() {
     setError("");
@@ -238,89 +253,100 @@ export function useNimGame() {
           setState(data);
           setTurnMsg("Your turn");
         }, 1500);
-      } 
+      }
     } catch (e) {
       setError(`Could not connect to server. ${e}`);
     } finally {
       setLoading(false);
     }
-  }  
+  }
 
   async function makeMove() {
     if (selectedPile === null || amount < 1) return;
+
     setError("");
     setLoading(true);
+
+    const prefix = wythoff ? "/wythoffs" : "/nim";
+
     try {
+      const humanMoveBody = wythoff
+        ? {
+            move_type: selectedPile + 1,
+            to_subtract: amount,
+          }
+        : {
+            pile_idx: selectedPile,
+            to_subtract: amount,
+          };
 
-      // break into cases. Game can either be player v player or player v computer
+
+      // Player move
+      const res = await fetch(`${API}${prefix}/human-move`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(humanMoveBody),
+      });
+
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || "Invalid move");
+      }
+
+      const data = await res.json();
+      setState(data);
+
+
+      if (data.game_over) {
+        setWinner("player");
+        setTurnMsg("Game over");
+        return;
+      }
+
+
+      // Computer move
       if (!setup.is_pvp) {
-        // player's turn to make a move
-        const res = await fetch(`${API}/nim/human-move`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pile_idx: selectedPile, to_subtract: amount }),
-        });
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.detail || "Invalid move");
-        }
-        const data = await res.json();
-        setState(data);
-
-        if (data.game_over) {
-          setState(data);
-          setWinner("player");
-          setTurnMsg("Game over");
-          return;
-        }      
-
         setThinking(true);
-        setTurnMsg("Computer is thinking...");  
-      
-        // computer's turn to make a move
-        const res2 = await fetch(`${API}/nim/computer-move`, {
+        setTurnMsg("Computer is thinking...");
+
+
+        const res2 = await fetch(`${API}${prefix}/computer-move`, {
           method: "POST",
         });
+
+
         const data2 = await res2.json();
-        // Small delay to show thinking state (computer already moved in API)
+
+
         setTimeout(() => {
           setThinking(false);
-          setState(data2); // already has computer move applied
+          setState(data2);
+
+          if (data2.game_over) {
+            setWinner("computer");
+            setTurnMsg("Game over");
+          } else {
+            setTurnMsg("Your turn");
+          }
+
         }, 1500);
 
-        if (data2.game_over) {
-          setState(data2);
-          setWinner("computer");
-          setTurnMsg("Game over");
-          return;
-        }
-
-        setTurnMsg("Your turn");
 
       } else {
-        // player vs player
-        if (selectedPile === null || amount < 1) return;
-        const res = await fetch(`${API}/nim/human-move`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pile_idx: selectedPile, to_subtract: amount }),
-        });
-          
-        const data = await res.json();
-        setState(data);
-
-        if (data.game_over) {
-          setState(data);
-          setWinner(turnMsg);
-          setTurnMsg("Game over");
-          return;
-        }
-        
-        setTurnMsg(prev => prev === "Player 1's turn" ? "Player 2's turn" : "Player 1's turn");
+        // PvP
+        setTurnMsg(prev =>
+          prev === "Player 1's turn"
+            ? "Player 2's turn"
+            : "Player 1's turn"
+        );
       }
+
 
       setSelectedPile(null);
       setAmount(1);
+
+
     } catch (e) {
       setError(e.message);
     } finally {

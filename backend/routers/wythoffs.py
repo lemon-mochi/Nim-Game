@@ -25,7 +25,7 @@ def new_random_game(req: WythoffNewRandomGameRequest):
     return get_state()
 
 
-@router.post("new-custom-game")
+@router.post("/new-custom-game")
 def new_custom_game(req: WythoffNewCustomGameRequest):
     global game
     game = WythoffGame(
@@ -34,7 +34,6 @@ def new_custom_game(req: WythoffNewCustomGameRequest):
         diff_level=req.difficulty,
         x=req.x,
         y=req.y,
-        diff_level=req.difficulty,
         random_game=False,
     )
     return get_state()

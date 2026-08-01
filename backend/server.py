@@ -1,12 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 import os
 
 from routers.nim import router as nim_router
 from routers.wythoffs import router as wythoff_router
 
 app = FastAPI()
+
+load_dotenv(dotenv_path=".env")
 origin = os.getenv("ORIGIN")
+print("CORS ORIGIN:", origin)
 
 app.add_middleware(
     CORSMiddleware,

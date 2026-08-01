@@ -254,7 +254,6 @@ class WythoffGame:
 
     def state(self):
         return {
-            "x": self.x,
-            "y": self.y,
+            "piles": [self.x, self.y],
             "game_over": bool(self.game_over),
         }

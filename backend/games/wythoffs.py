@@ -146,14 +146,20 @@ class WythoffGame:
 
     def easy_mode(self) -> None:
         rand_idx = rng.integers(low=1, high=4)
+
         if rand_idx == 1:
+            move_type = MoveType.FIRST_PILE
             to_pick_up = rng.integers(low=1, high=self.x + 1)
-        if rand_idx == 2:
+
+        elif rand_idx == 2:
+            move_type = MoveType.SECOND_PILE
             to_pick_up = rng.integers(low=1, high=self.y + 1)
+
         else:
+            move_type = MoveType.BOTH
             to_pick_up = rng.integers(low=1, high=min(self.x, self.y) + 1)
 
-        self.play_round(move_type=rand_idx, to_subtract=to_pick_up)
+        self.play_round(move_type=move_type, to_subtract=int(to_pick_up))
 
     def computer_move(self) -> None:
         # if there is one pile or both piles are the same,
@@ -207,8 +213,8 @@ class WythoffGame:
         min_per_pile: int = 0,
         max_per_pile: int = 0,
         diff_level: Difficulty = Difficulty.EASY,
-        x: int = None,
-        y: int = None,
+        x: int = 0,
+        y: int = 0,
     ):
         self.is_pvp = is_pvp
         self.player_goes_first = player_goes_first
@@ -254,6 +260,6 @@ class WythoffGame:
 
     def state(self):
         return {
-            "piles": [self.x, self.y],
+            "piles": [int(self.x), int(self.y)],
             "game_over": bool(self.game_over),
         }

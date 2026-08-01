@@ -12,7 +12,6 @@ class WythoffNewRandomGameRequest(BaseModel):
     min_per_pile: int
     max_per_pile: int
     difficulty: Difficulty
-    random_game: int
 
 
 class WythoffNewCustomGameRequest(BaseModel):

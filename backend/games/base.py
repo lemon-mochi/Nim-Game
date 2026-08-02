@@ -1,3 +1,9 @@
+"""
+games/base.py
+-------------
+This file provides the definitions for the base methods needed in all games of Nim.
+"""
+
 from abc import ABC, abstractmethod
 
 

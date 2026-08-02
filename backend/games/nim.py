@@ -1,6 +1,6 @@
 """
-nim.py
-------
+games/nim.py
+------------
 This file contains the code needed to run the backend of Nim game
 """
 

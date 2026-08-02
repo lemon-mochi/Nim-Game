@@ -1,6 +1,6 @@
 """
-wythoffs.py
------------
+games/wythoffs.py
+-----------------
 This file contains the code needed to run the backend of Wythoff's game
 Inspiration from the following project:
 https://github.com/LazarPajic/Math302-Wythoff-s-Game

@@ -1,3 +1,9 @@
+"""
+routers/wythoffs.py
+-------------------
+This file contains endpoints used in Wythoff's game
+"""
+
 from fastapi import APIRouter
 
 from games.wythoffs import WythoffGame

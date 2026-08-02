@@ -1,3 +1,9 @@
+"""
+routers/nim.py
+--------------
+This file contains endpoints used in classical Nim
+"""
+
 from fastapi import APIRouter
 
 from games.nim import Game

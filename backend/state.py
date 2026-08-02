@@ -1,4 +1,8 @@
-# state.py
+"""
+state.py
+--------
+Global variable of the game currently being played
+"""
 
 from games.base import BaseGame
 

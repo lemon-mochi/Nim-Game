@@ -1,3 +1,9 @@
+"""
+models/nim.py
+-------------
+Model definitions used for classical Nim
+"""
+
 from pydantic import BaseModel
 from typing import List
 from constants import Difficulty

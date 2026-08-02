@@ -1,3 +1,9 @@
+"""
+constants.py
+------------
+Class definitions to be used by other files
+"""
+
 from enum import Enum
 
 

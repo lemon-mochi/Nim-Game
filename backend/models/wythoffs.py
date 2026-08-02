@@ -1,3 +1,9 @@
+"""
+models/wythoffs.py
+------------------
+Model definitions used for Wythoff's game
+"""
+
 from pydantic import BaseModel
 from constants import Difficulty, MoveType
 

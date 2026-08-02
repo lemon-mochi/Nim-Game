@@ -1,4 +1,15 @@
-from nim import Game, Difficulty
+"""
+test_nim_terminal.py
+--------------------
+This program runs a basic version of Nim game in the termianl.
+This is used for debugging the backend code.
+
+Usage:
+    python test_nim_terminal.py
+"""
+
+from constants import Difficulty
+from games.nim import Game
 
 
 is_pvp = False

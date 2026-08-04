@@ -243,15 +243,22 @@ class WythoffGame:
             # if the player is first, the game should be unbalanced.
             # if the game is person vs person, it does not matter
 
+            # there is a special case where the user enters values for
+            # min_per_pile and max_per_pile that make it impossible for the game
+            # to be balanced at the start. For example, if the player enters 9
+            # for min_per_pile and 10 for max_per_pile, the game cannot be balanced
+            # in this case, just make the game normally
             if not self.is_pvp and self.diff_level == Difficulty.IMPOSSIBLE:
-                if not self.is_balanced() and self.player_goes_first:
+                if min_per_pile * PHI >= max_per_pile:
+                    pass
+                elif not self.is_balanced() and self.player_goes_first:
                     # Idea: keep generating boards until it is balanced
 
                     while not self.is_balanced() or self.x == self.y:
                         self.x = rng.integers(low=min_per_pile, high=max_per_pile + 1)
                         self.y = rng.integers(low=min_per_pile, high=max_per_pile + 1)
 
-                if self.is_balanced() and not self.player_goes_first:
+                elif self.is_balanced() and not self.player_goes_first:
                     while self.is_balanced() or self.x == self.y:
                         self.x = rng.integers(low=min_per_pile, high=max_per_pile + 1)
                         self.y = rng.integers(low=min_per_pile, high=max_per_pile + 1)
